@@ -15,18 +15,18 @@ export interface SplashProps {
   subline?: string;
   /** CTA 라벨 (기본: "시작하기") */
   ctaLabel?: string;
-  /** 푸터 안내 (기본: "이름만 적으면 시작됩니다") */
+  /** 푸터 안내 (기본: 없음). 첫 화면은 컨셉 전달에 집중하기 위해 비워둠. */
   footnote?: string;
 }
 
 export function Splash({
   onStart,
-  brand = "기억할 일",
+  brand = "기억.할 일",
   headlineTop = "한 사람을 향한",
   headlineBottom = "오늘 할 일을 적습니다.",
   subline = "매일 하나씩, 닿고 싶은 마음.",
   ctaLabel = "시작하기",
-  footnote = "이름만 적으면 시작됩니다",
+  footnote,
 }: SplashProps) {
   return (
     <section
@@ -34,20 +34,26 @@ export function Splash({
       aria-label={`${brand} — 시작 화면`}
     >
       <div className="flex w-full max-w-[420px] flex-col items-center pt-10 pb-9 text-center">
-        {/* Brand mark = 페이지 타이틀 (semantic h1, 시각적 pill) */}
-        <h1
-          className="bg-mark-gradient m-0 mb-9 grid place-items-center rounded-[22px] px-5"
-          style={{
-            minWidth: 88,
-            height: 64,
-            color: "#fff8e6",
-            fontSize: 26,
-            fontWeight: 600,
-            letterSpacing: "-0.01em",
-            boxShadow: "0 16px 40px rgba(184, 146, 63, 0.32)",
-          }}
-        >
-          {brand}
+        {/* Brand mark */}
+        <h1 className="m-0 mb-9 flex flex-col items-center gap-3">
+          <span
+            style={{
+              color: "#b8923f",
+              fontSize: 15,
+              fontWeight: 500,
+              letterSpacing: "0.18em",
+            }}
+          >
+            {brand}
+          </span>
+          <span
+            style={{
+              display: "block",
+              width: 24,
+              height: 1,
+              background: "rgba(184, 146, 63, 0.45)",
+            }}
+          />
         </h1>
 
         <p className="m-0 mb-12 max-w-[280px] text-[16px] leading-[1.65] text-ink">

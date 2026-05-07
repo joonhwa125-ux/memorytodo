@@ -12,6 +12,7 @@ import {
 } from "@/lib/utils/time";
 import { uiPersonFromDb, formatLastThoughtOf } from "@/lib/mappers";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 import { PersonHeader, UniversalStats } from "@/components/home";
 import { SplashLanding } from "./SplashLanding";
 import { HomeQuickRecord } from "./HomeQuickRecord";
@@ -67,6 +68,15 @@ export default async function HomePage() {
       <HomeQuickRecord personId={personDb.id} />
 
       <ResistedConstellation count={summary.resisted} />
+
+      <div className="mt-3 text-center">
+        <Link
+          href="/overview"
+          className="inline-block rounded-lg px-3 py-1.5 text-[13px] text-ink-2 transition-colors hover:bg-surface-2 hover:text-ink"
+        >
+          지난 30일 흐름 보기 →
+        </Link>
+      </div>
     </main>
   );
 }
