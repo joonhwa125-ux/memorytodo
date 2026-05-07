@@ -16,10 +16,14 @@
   --color-line:        rgba(60, 45, 25, 0.08);
   --color-line-strong: rgba(60, 45, 25, 0.14);
 
-  /* Ink (text) */
+  /* Ink (text) — WCAG AA on canvas #faf6ed
+   * ink:    ~14:1 (primary)
+   * ink-2:   ~7:1 (secondary, body)
+   * ink-3:  ~4.7:1 (tertiary, AA pass for normal text 14px+)
+   */
   --color-ink:    #2a2620;
-  --color-ink-2:  #6b6359;
-  --color-ink-3:  #a89f93;
+  --color-ink-2:  #524a40;
+  --color-ink-3:  #7d7468;
 
   /* Quadrant — Resisted (참았어 / 충동을 멈춤) */
   --color-resisted:      #b8923f;
