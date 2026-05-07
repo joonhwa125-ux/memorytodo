@@ -1,0 +1,1275 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>기억 — 한 사람과의 1년 · 목업 v2</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+  rel="stylesheet"
+/>
+<style>
+  :root {
+    /* Warm Light Palette — "아침 부엌 햇살" */
+    --bg:        #faf6ed;
+    --bg-2:      #ffffff;
+    --surface:   rgba(60, 45, 25, 0.025);
+    --surface-2: rgba(60, 45, 25, 0.045);
+    --border:    rgba(60, 45, 25, 0.08);
+    --border-2:  rgba(60, 45, 25, 0.14);
+
+    --text:   #2a2620;
+    --text-2: #6b6359;
+    --text-3: #a89f93;
+
+    --resisted:      #b8923f;
+    --resisted-glow: rgba(184, 146, 63, 0.22);
+    --resisted-soft: rgba(184, 146, 63, 0.10);
+    --resisted-deep: #856721;
+
+    --aligned:      #5a8d6e;
+    --aligned-soft: rgba(90, 141, 110, 0.12);
+
+    --procras:      #7e8a9b;
+    --procras-soft: rgba(126, 138, 155, 0.12);
+
+    --relapsed:      #b56b58;
+    --relapsed-soft: rgba(181, 107, 88, 0.12);
+
+    --present:      #8975c8;
+    --present-soft: rgba(137, 117, 200, 0.12);
+
+    --shadow-sm: 0 1px 2px rgba(60, 45, 25, 0.06);
+    --shadow-md: 0 4px 14px rgba(60, 45, 25, 0.08);
+    --shadow-lg: 0 24px 60px rgba(60, 45, 25, 0.18);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: var(--bg); color: var(--text); font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+
+  body {
+    background:
+      radial-gradient(1100px 600px at 90% -10%, rgba(184, 146, 63, 0.10), transparent 60%),
+      radial-gradient(900px 500px at -10% 110%, rgba(137, 117, 200, 0.07), transparent 60%),
+      var(--bg);
+    min-height: 100vh;
+    padding: 48px 24px 96px;
+  }
+
+  .doc-header { max-width: 1480px; margin: 0 auto 36px; }
+  .doc-eyebrow { font-size: 12px; letter-spacing: 0.16em; color: var(--text-3); text-transform: uppercase; margin-bottom: 8px; }
+  .doc-title { font-size: 28px; font-weight: 600; letter-spacing: -0.02em; margin: 0 0 8px; }
+  .doc-title em { font-style: normal; color: var(--resisted-deep); }
+  .doc-sub { color: var(--text-2); font-size: 14px; max-width: 760px; line-height: 1.65; }
+
+  .row-label {
+    max-width: 1480px;
+    margin: 28px auto 16px;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .row-label .num { font-size: 11px; letter-spacing: 0.2em; color: var(--text-3); }
+  .row-label .name { font-size: 14px; font-weight: 500; color: var(--text-2); }
+
+  .frames {
+    display: flex;
+    gap: 28px;
+    justify-content: center;
+    overflow-x: auto;
+    padding-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .frame { width: 360px; flex-shrink: 0; }
+  .frame-label { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; }
+  .frame-step { font-size: 11px; letter-spacing: 0.18em; color: var(--text-3); }
+  .frame-name { font-size: 15px; font-weight: 500; }
+
+  .phone {
+    height: 760px;
+    border-radius: 44px;
+    background: linear-gradient(180deg, #f5efe2, #ebe3d2);
+    padding: 14px;
+    box-shadow:
+      var(--shadow-lg),
+      inset 0 0 0 1px rgba(60, 45, 25, 0.06);
+    position: relative;
+  }
+  .phone::before {
+    content: "";
+    position: absolute;
+    top: 22px; left: 50%;
+    transform: translateX(-50%);
+    width: 92px; height: 26px;
+    background: #1a1612;
+    border-radius: 14px;
+    z-index: 3;
+  }
+  .screen {
+    width: 100%;
+    height: 100%;
+    border-radius: 32px;
+    background: var(--bg-2);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .status {
+    height: 44px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 0 28px 6px;
+    font-size: 11px;
+    color: var(--text-2);
+    letter-spacing: 0.04em;
+  }
+  .status .right { display: flex; gap: 5px; align-items: center; }
+  .status .right svg { opacity: 0.55; }
+
+  .scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 18px 22px 28px;
+  }
+  .scroll::-webkit-scrollbar { width: 0; }
+
+  .eyebrow { font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-3); margin-bottom: 6px; }
+  .h1 { font-size: 26px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; margin: 0; }
+  .h2 { font-size: 16px; font-weight: 500; letter-spacing: -0.01em; margin: 0 0 10px; }
+  .muted { color: var(--text-2); font-size: 13px; line-height: 1.55; }
+  .micro { color: var(--text-3); font-size: 11px; letter-spacing: 0.04em; }
+
+  .card {
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 16px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* ============ ONBOARDING 1: SPLASH ============ */
+  .onb-splash {
+    flex: 1;
+    background:
+      radial-gradient(500px 400px at 50% 30%, rgba(184, 146, 63, 0.18), transparent 65%),
+      radial-gradient(500px 400px at 50% 100%, rgba(137, 117, 200, 0.10), transparent 60%),
+      linear-gradient(180deg, #fdf9ee, #f5eed9);
+    padding: 48px 32px 36px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .onb-mark {
+    min-width: 88px; height: 64px;
+    padding: 0 18px;
+    border-radius: 22px;
+    background: linear-gradient(135deg, #d4ae5a, #b8923f);
+    display: grid; place-items: center;
+    color: #fff8e6;
+    font-size: 26px;
+    font-weight: 500;
+    margin-bottom: 36px;
+    box-shadow: 0 16px 40px rgba(184, 146, 63, 0.32);
+    letter-spacing: -0.01em;
+  }
+  .onb-title {
+    font-size: 32px;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    color: var(--text);
+    margin: 0 0 14px;
+    line-height: 1.2;
+  }
+  .onb-sub {
+    font-size: 15px;
+    color: var(--text-2);
+    line-height: 1.7;
+    max-width: 260px;
+    margin: 0 0 56px;
+  }
+  .onb-sub em {
+    font-style: italic;
+    color: var(--text-3);
+    display: block;
+    margin-top: 6px;
+    font-size: 13px;
+  }
+  .onb-cta {
+    width: 100%;
+    padding: 16px 20px;
+    border-radius: 16px;
+    background: var(--text);
+    color: var(--bg-2);
+    font-size: 15px;
+    font-weight: 500;
+    border: none;
+    box-shadow: 0 8px 22px rgba(42, 38, 32, 0.18);
+  }
+  .onb-foot {
+    margin-top: 18px;
+    font-size: 11.5px;
+    color: var(--text-3);
+    letter-spacing: 0.04em;
+  }
+
+  /* ============ ONBOARDING 2: NAME INPUT ============ */
+  .onb-name {
+    flex: 1;
+    padding: 64px 28px 32px;
+    display: flex;
+    flex-direction: column;
+  }
+  .onb-step {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--text-3);
+    margin-bottom: 24px;
+  }
+  .onb-question {
+    font-size: 26px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.4;
+    margin: 0 0 12px;
+  }
+  .onb-help {
+    font-size: 13px;
+    color: var(--text-2);
+    line-height: 1.6;
+    margin-bottom: 36px;
+  }
+  .onb-input-wrap {
+    border-bottom: 1.5px solid var(--text);
+    padding: 6px 0 12px;
+    margin-bottom: 18px;
+  }
+  .onb-input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--text);
+    font-family: inherit;
+    outline: none;
+    padding: 0;
+  }
+  .onb-input::placeholder { color: var(--text-3); font-weight: 300; }
+  .onb-hint-chips {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 36px;
+  }
+  .chip {
+    font-size: 12.5px;
+    padding: 7px 12px;
+    border-radius: 999px;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text-2);
+  }
+  .onb-extra {
+    margin-top: auto;
+    padding: 16px;
+    border-radius: 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    margin-bottom: 16px;
+  }
+  .onb-extra-label { font-size: 11.5px; color: var(--text-3); letter-spacing: 0.08em; margin-bottom: 8px; }
+  .onb-extra-val { font-size: 14px; color: var(--text-2); }
+  .onb-extra-val em { font-style: italic; color: var(--text-3); font-weight: 300; }
+
+  .onb-cta-row {
+    display: flex; gap: 10px;
+  }
+  .onb-skip {
+    flex: 1; padding: 14px;
+    border-radius: 14px;
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-2);
+    font-size: 14px;
+  }
+  .onb-next {
+    flex: 2; padding: 14px;
+    border-radius: 14px;
+    background: var(--text);
+    color: var(--bg-2);
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  /* ============ HOME ============ */
+  .person-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+  .avatar {
+    width: 44px; height: 44px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #f0e6cf, #d8c79a);
+    display: grid; place-items: center;
+    color: var(--resisted-deep);
+    font-weight: 600;
+    font-size: 16px;
+    box-shadow: var(--shadow-sm);
+  }
+  .person-meta { line-height: 1.3; }
+  .person-name { font-size: 17px; font-weight: 500; }
+  .person-sub { font-size: 11.5px; color: var(--text-3); margin-top: 2px; }
+
+  .universal-stats {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 22px;
+    margin-top: 14px;
+  }
+  .ustat {
+    flex: 1;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 12px;
+  }
+  .ustat-label { font-size: 10px; color: var(--text-3); letter-spacing: 0.08em; text-transform: uppercase; }
+  .ustat-value { font-size: 15px; font-weight: 500; margin-top: 4px; letter-spacing: -0.01em; color: var(--text); }
+  .ustat-value em { font-style: normal; color: var(--resisted-deep); font-size: 18px; font-weight: 600; }
+  .ustat-sub { font-size: 10.5px; color: var(--text-3); margin-top: 1px; }
+
+  .today-block { margin-bottom: 18px; }
+  .today-block-title {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 10px;
+  }
+  .pill {
+    font-size: 10.5px;
+    padding: 3px 9px;
+    border-radius: 999px;
+    color: var(--text-3);
+    border: 1px solid var(--border);
+  }
+
+  .intent-row {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .intent-row:last-child { border-bottom: none; }
+  .intent-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    margin-top: 7px;
+    flex-shrink: 0;
+  }
+  .intent-dot.do    { background: var(--aligned); box-shadow: 0 0 8px var(--aligned-soft); }
+  .intent-dot.avoid { background: var(--resisted); box-shadow: 0 0 8px var(--resisted-glow); }
+  .intent-text { flex: 1; font-size: 14px; line-height: 1.45; color: var(--text); }
+  .intent-text .why { display: block; color: var(--text-3); font-size: 11.5px; margin-top: 3px; }
+
+  .quick-record {
+    margin-top: 14px;
+    padding: 14px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, var(--present-soft), var(--resisted-soft));
+    border: 1px solid var(--border-2);
+  }
+  .quick-record-label {
+    font-size: 11.5px;
+    color: var(--present);
+    letter-spacing: 0.06em;
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+  .qr-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .qr-btn {
+    padding: 10px 10px;
+    border-radius: 12px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 12.5px;
+    text-align: left;
+    cursor: pointer;
+    line-height: 1.3;
+    box-shadow: var(--shadow-sm);
+  }
+  .qr-btn .tag { display: block; font-size: 10px; margin-bottom: 3px; letter-spacing: 0.08em; font-weight: 500; }
+  .qr-btn.aligned .tag    { color: var(--aligned); }
+  .qr-btn.resisted .tag   { color: var(--resisted-deep); }
+  .qr-btn.procras .tag    { color: var(--procras); }
+  .qr-btn.relapsed .tag   { color: var(--relapsed); }
+
+  .constellation {
+    margin-top: 22px;
+    padding: 18px 16px;
+    border-radius: 18px;
+    background:
+      radial-gradient(120px 80px at 50% 50%, rgba(184, 146, 63, 0.10), transparent 70%),
+      var(--bg-2);
+    border: 1px solid var(--border);
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+  }
+  .constellation .label { color: var(--resisted-deep); font-size: 11px; letter-spacing: 0.16em; margin-bottom: 10px; font-weight: 500; }
+  .constellation svg { display: block; margin: 0 auto; }
+  .constellation .count { font-size: 24px; font-weight: 500; margin-top: 8px; letter-spacing: -0.02em; }
+  .constellation .count em { font-style: normal; color: var(--resisted-deep); }
+  .constellation .desc { font-size: 11.5px; color: var(--text-3); margin-top: 4px; }
+
+  /* ============ OVERVIEW (30일) ============ */
+  .nav-bar {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 16px;
+    color: var(--text-2);
+    font-size: 13px;
+  }
+  .nav-bar .left { display: flex; gap: 10px; align-items: center; }
+  .nav-bar svg { opacity: 0.6; }
+
+  .month-summary { margin-bottom: 18px; }
+  .ms-title { font-size: 12px; color: var(--text-3); letter-spacing: 0.12em; text-transform: uppercase; }
+  .ms-line { margin-top: 10px; font-size: 16px; line-height: 1.5; color: var(--text); font-weight: 400; }
+  .ms-line strong { font-weight: 600; color: var(--text); }
+  .ms-line em { font-style: italic; color: var(--text-2); font-weight: 300; }
+
+  .quad-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .quad {
+    border-radius: 16px;
+    padding: 14px;
+    border: 1px solid var(--border);
+    background: var(--bg-2);
+    min-height: 96px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .quad .qlabel { font-size: 10.5px; letter-spacing: 0.14em; color: var(--text-3); font-weight: 500; }
+  .quad .qnum { font-size: 32px; font-weight: 500; letter-spacing: -0.04em; margin-top: 4px; line-height: 1; color: var(--text); }
+  .quad .qdesc { font-size: 11.5px; color: var(--text-2); margin-top: 6px; line-height: 1.35; }
+
+  .quad.resisted {
+    background:
+      radial-gradient(140px 80px at 30% 0%, var(--resisted-soft), transparent 70%),
+      var(--bg-2);
+    border-color: rgba(184, 146, 63, 0.32);
+    box-shadow: 0 0 24px rgba(184, 146, 63, 0.12), var(--shadow-sm);
+  }
+  .quad.resisted .qlabel, .quad.resisted .qnum { color: var(--resisted-deep); }
+
+  .quad.aligned       { background: radial-gradient(140px 80px at 80% 0%, var(--aligned-soft), transparent 70%), var(--bg-2); }
+  .quad.aligned .qlabel { color: var(--aligned); }
+  .quad.procras       { background: radial-gradient(140px 80px at 30% 100%, var(--procras-soft), transparent 70%), var(--bg-2); }
+  .quad.procras .qlabel { color: var(--procras); }
+  .quad.relapsed      { background: radial-gradient(140px 80px at 80% 100%, var(--relapsed-soft), transparent 70%), var(--bg-2); }
+  .quad.relapsed .qlabel { color: var(--relapsed); }
+
+  .strand { margin-top: 14px; }
+  .strand-title {
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--text-3); letter-spacing: 0.1em;
+    margin-bottom: 10px;
+  }
+  .strand-grid {
+    display: grid;
+    grid-template-columns: repeat(15, 1fr);
+    gap: 4px;
+  }
+  .strand-cell {
+    aspect-ratio: 1 / 1;
+    border-radius: 4px;
+    background: var(--surface);
+  }
+  .sc.r { background: var(--resisted); opacity: 0.85; }
+  .sc.a { background: var(--aligned); opacity: 0.7; }
+  .sc.p { background: var(--procras); opacity: 0.4; }
+  .sc.x { background: var(--relapsed); opacity: 0.55; }
+  .sc.empty { background: var(--surface); }
+
+  .legend {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    margin-top: 12px;
+    font-size: 10.5px;
+    color: var(--text-2);
+  }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend i { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+  .legend i.r { background: var(--resisted); }
+  .legend i.a { background: var(--aligned); }
+  .legend i.p { background: var(--procras); }
+  .legend i.x { background: var(--relapsed); }
+
+  /* ============ EVENING REVIEW ============ */
+  .review-screen { padding: 22px; flex: 1; display: flex; flex-direction: column; }
+  .review-step { display: flex; gap: 4px; margin-bottom: 22px; }
+  .step-bar { flex: 1; height: 3px; border-radius: 2px; background: var(--surface-2); }
+  .step-bar.active { background: var(--present); }
+  .step-bar.done   { background: rgba(137, 117, 200, 0.45); }
+
+  .review-prompt {
+    font-size: 12px;
+    color: var(--text-3);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .review-question {
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1.4;
+    margin: 0 0 28px;
+    letter-spacing: -0.015em;
+    color: var(--text);
+  }
+
+  .swipe-stack {
+    position: relative;
+    height: 280px;
+    margin: 0 -4px 24px;
+  }
+  .swipe-card {
+    position: absolute;
+    inset: 0;
+    border-radius: 22px;
+    background: var(--bg-2);
+    border: 1px solid var(--border);
+    padding: 20px;
+    box-shadow: var(--shadow-md);
+  }
+  .swipe-card.behind1 { transform: translate(0, 14px) scale(0.96); opacity: 0.55; }
+  .swipe-card.behind2 { transform: translate(0, 26px) scale(0.92); opacity: 0.3; }
+  .swipe-card.front {
+    transform: rotate(-3.5deg) translate(-4px, -2px);
+    background:
+      radial-gradient(180px 100px at 0% 0%, var(--procras-soft), transparent 70%),
+      var(--bg-2);
+    border-color: rgba(126, 138, 155, 0.32);
+  }
+  .sc-time { font-size: 11.5px; color: var(--text-3); letter-spacing: 0.08em; }
+  .sc-event {
+    margin-top: 10px;
+    font-size: 17px;
+    line-height: 1.45;
+    font-weight: 400;
+    color: var(--text);
+  }
+  .sc-meta {
+    margin-top: 14px;
+    font-size: 12px;
+    color: var(--text-2);
+    line-height: 1.5;
+    font-style: italic;
+  }
+
+  .swipe-guide {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    margin-bottom: 16px;
+  }
+  .sg {
+    border-radius: 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    background: var(--bg-2);
+    display: flex; align-items: center; gap: 10px;
+    font-size: 12px;
+    box-shadow: var(--shadow-sm);
+  }
+  .sg .arrow {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    font-size: 11px;
+    background: var(--surface-2);
+    font-weight: 600;
+  }
+  .sg.up    { border-color: rgba(184, 146, 63, 0.35); background: linear-gradient(135deg, var(--resisted-soft), var(--bg-2)); }
+  .sg.up .arrow { color: var(--resisted-deep); }
+  .sg.right { border-color: rgba(90, 141, 110, 0.35); background: linear-gradient(135deg, var(--aligned-soft), var(--bg-2)); }
+  .sg.right .arrow { color: var(--aligned); }
+  .sg.left  { border-color: rgba(126, 138, 155, 0.35); background: linear-gradient(135deg, var(--procras-soft), var(--bg-2)); }
+  .sg.left .arrow { color: var(--procras); }
+  .sg.down  { border-color: rgba(181, 107, 88, 0.35); background: linear-gradient(135deg, var(--relapsed-soft), var(--bg-2)); }
+  .sg.down .arrow { color: var(--relapsed); }
+  .sg .name { font-weight: 500; margin-right: 4px; color: var(--text); }
+  .sg .desc { color: var(--text-3); font-size: 11px; }
+
+  .review-footnote {
+    margin-top: auto;
+    text-align: center;
+    color: var(--text-3);
+    font-size: 11.5px;
+    line-height: 1.6;
+  }
+  .review-footnote em { font-style: italic; color: var(--text-2); }
+
+  /* ============ MONTHLY WRAPPED ============ */
+  .wrapped {
+    height: 100%;
+    background:
+      radial-gradient(420px 320px at 50% 26%, rgba(184, 146, 63, 0.22), transparent 65%),
+      radial-gradient(500px 400px at 50% 100%, rgba(137, 117, 200, 0.10), transparent 60%),
+      linear-gradient(180deg, #fdf6e4, #f5e9c8);
+    padding: 32px 26px 26px;
+    display: flex;
+    flex-direction: column;
+  }
+  .wrapped-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 28px;
+  }
+  .wrapped-month {
+    font-size: 12px; letter-spacing: 0.18em;
+    color: var(--text-2); text-transform: uppercase; font-weight: 500;
+  }
+  .wrapped-x { color: var(--text-3); font-size: 18px; }
+
+  .wrapped-eyebrow {
+    font-size: 11px;
+    color: var(--text-2);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+    font-weight: 500;
+  }
+  .wrapped-number {
+    font-size: 110px;
+    font-weight: 300;
+    color: var(--resisted-deep);
+    letter-spacing: -0.06em;
+    line-height: 0.9;
+    text-shadow: 0 4px 30px var(--resisted-glow);
+    margin-bottom: 14px;
+  }
+  .wrapped-number sup {
+    font-size: 28px;
+    color: var(--text-2);
+    margin-left: 6px;
+    vertical-align: super;
+    text-shadow: none;
+  }
+  .wrapped-line {
+    font-size: 19px;
+    line-height: 1.5;
+    color: var(--text);
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .wrapped-line em { font-style: italic; color: var(--text-2); font-weight: 300; }
+
+  .wrapped-spacer { flex: 1; min-height: 20px; }
+
+  .wrapped-mini {
+    border-top: 1px solid var(--border-2);
+    padding-top: 18px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+    margin-bottom: 18px;
+  }
+  .wm-item .wm-label { font-size: 10.5px; color: var(--text-3); letter-spacing: 0.1em; text-transform: uppercase; }
+  .wm-item .wm-value { font-size: 18px; font-weight: 500; margin-top: 4px; letter-spacing: -0.02em; color: var(--text); }
+  .wm-item .wm-value.gold { color: var(--resisted-deep); }
+  .wm-item .wm-sub { font-size: 11px; color: var(--text-3); margin-top: 2px; }
+
+  .wrapped-share { display: flex; gap: 8px; }
+  .ws-btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    background: var(--bg-2);
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 500;
+    box-shadow: var(--shadow-sm);
+  }
+  .ws-btn.primary {
+    background: var(--text);
+    color: var(--bg-2);
+    border-color: var(--text);
+  }
+
+  /* ============ Footer notes ============ */
+  .legend-section {
+    max-width: 1480px;
+    margin: 64px auto 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 28px;
+  }
+  @media (max-width: 1500px) {
+    .legend-section { grid-template-columns: 1fr; }
+  }
+  .ls-card {
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 22px 24px;
+    background: var(--bg-2);
+    box-shadow: var(--shadow-sm);
+  }
+  .ls-step { font-size: 11px; letter-spacing: 0.18em; color: var(--text-3); }
+  .ls-name { font-size: 16px; font-weight: 500; margin: 6px 0 10px; }
+  .ls-desc { font-size: 13.5px; color: var(--text-2); line-height: 1.65; }
+
+  .ic { width: 14px; height: 14px; vertical-align: middle; }
+</style>
+</head>
+<body>
+
+<header class="doc-header">
+  <div class="doc-eyebrow">Mockup v2 · 2026-05-07 · Warm Light</div>
+  <h1 class="doc-title">기<em>억</em> — 한 사람과의 1년</h1>
+  <p class="doc-sub">
+    한 사람의 이름만 입력하면 시작된다. 어머니든 친구든 잃어버린 사람이든. 매일 의도와 행동의
+    간극을 조용히 기록하고, 1년이 지났을 때 그 사람과 보낸 시간을 한 장의 카드로 돌려준다.
+    아래는 사용자가 처음 앱을 만나는 순간부터 매일·매월 거치는 흐름 6화면이다.
+  </p>
+</header>
+
+<!-- =========================================================== -->
+<!-- ROW 1: ONBOARDING -->
+<!-- =========================================================== -->
+<div class="row-label">
+  <span class="num">FIRST RUN</span>
+  <span class="name">앱을 처음 켰을 때 · 약 30초</span>
+</div>
+
+<div class="frames">
+
+  <!-- ONB 1: Splash -->
+  <div class="frame">
+    <div class="frame-label">
+      <span class="frame-step">01</span>
+      <span class="frame-name">시작 화면</span>
+    </div>
+    <div class="phone">
+      <div class="screen">
+        <div class="status">
+          <span>9:14</span>
+          <span class="right">
+            <svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M2 9h3v6H2zM7 7h3v8H7zM12 5h3v10h-3zM17 3h3v12h-3z"/></svg>
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 11v2"/></svg>
+          </span>
+        </div>
+        <div class="onb-splash">
+          <div class="onb-mark">기억</div>
+          <h1 class="onb-title">기억</h1>
+          <p class="onb-sub">
+            한 사람과의 1년을<br/>조용히 기록합니다.
+            <em>당신이 가장 자주 떠올리는 한 사람.</em>
+          </p>
+          <button class="onb-cta">시작하기</button>
+          <div class="onb-foot">로그인은 이름을 적은 후에 묻습니다</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ONB 2: Name Input -->
+  <div class="frame">
+    <div class="frame-label">
+      <span class="frame-step">02</span>
+      <span class="frame-name">이름 입력</span>
+    </div>
+    <div class="phone">
+      <div class="screen">
+        <div class="status">
+          <span>9:14</span>
+          <span class="right">
+            <svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M2 9h3v6H2zM7 7h3v8H7zM12 5h3v10h-3zM17 3h3v12h-3z"/></svg>
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 11v2"/></svg>
+          </span>
+        </div>
+        <div class="onb-name">
+          <div class="onb-step">STEP 1 / 1</div>
+          <h2 class="onb-question">
+            그 사람을<br/>어떻게 부르시나요?
+          </h2>
+          <p class="onb-help">
+            관계는 묻지 않습니다. 부르는 이름이면 충분합니다.
+          </p>
+
+          <div class="onb-input-wrap">
+            <input class="onb-input" value="엄마" />
+          </div>
+          <div class="onb-hint-chips">
+            <span class="chip">엄마</span>
+            <span class="chip">자기야</span>
+            <span class="chip">민지</span>
+            <span class="chip">형</span>
+            <span class="chip">할머니</span>
+          </div>
+
+          <div class="onb-extra">
+            <div class="onb-extra-label">생일 (선택)</div>
+            <div class="onb-extra-val">
+              <em>나중에 추가해도 됩니다 · 올해 남은 통화 횟수, D-day에 사용됩니다</em>
+            </div>
+          </div>
+
+          <div class="onb-cta-row">
+            <button class="onb-skip">건너뛰기</button>
+            <button class="onb-next">시작</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- =========================================================== -->
+<!-- ROW 2: DAILY USE -->
+<!-- =========================================================== -->
+<div class="row-label" style="margin-top: 56px;">
+  <span class="num">DAILY USE</span>
+  <span class="name">앱을 쓰며 보내는 하루의 흐름</span>
+</div>
+
+<div class="frames">
+
+  <!-- HOME -->
+  <div class="frame">
+    <div class="frame-label">
+      <span class="frame-step">03 · MORNING</span>
+      <span class="frame-name">홈</span>
+    </div>
+    <div class="phone">
+      <div class="screen">
+        <div class="status">
+          <span>9:14</span>
+          <span class="right">
+            <svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M2 9h3v6H2zM7 7h3v8H7zM12 5h3v10h-3zM17 3h3v12h-3z"/></svg>
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 11v2"/></svg>
+          </span>
+        </div>
+
+        <div class="scroll">
+          <div class="person-header">
+            <div class="avatar">엄</div>
+            <div class="person-meta">
+              <div class="person-name">엄마</div>
+              <div class="person-sub">마지막으로 떠올린 날 · 5월 2일</div>
+            </div>
+          </div>
+
+          <div class="universal-stats">
+            <div class="ustat">
+              <div class="ustat-label">올해 남은 주말</div>
+              <div class="ustat-value"><em>34</em>번</div>
+              <div class="ustat-sub">2026 12월 31일까지</div>
+            </div>
+            <div class="ustat">
+              <div class="ustat-label">생일까지</div>
+              <div class="ustat-value"><em>D-92</em></div>
+              <div class="ustat-sub">8월 7일</div>
+            </div>
+          </div>
+
+          <div class="today-block">
+            <div class="today-block-title">
+              <span class="eyebrow">오늘 마음에 둔 것</span>
+              <span class="pill">3</span>
+            </div>
+            <div class="card">
+              <div class="intent-row">
+                <span class="intent-dot do"></span>
+                <div class="intent-text">
+                  저녁 7시쯤 전화 드리기
+                  <span class="why">지난주 "주말에 통화하자" 약속 미이행</span>
+                </div>
+              </div>
+              <div class="intent-row">
+                <span class="intent-dot do"></span>
+                <div class="intent-text">
+                  점심 메뉴 사진 한 장 보내기
+                </div>
+              </div>
+              <div class="intent-row">
+                <span class="intent-dot avoid"></span>
+                <div class="intent-text">
+                  통화 중 짜증내지 않기
+                  <span class="why">최근 3번 통화에서 반복됨</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="quick-record">
+            <div class="quick-record-label">지금 이 순간 기록</div>
+            <div class="qr-grid">
+              <button class="qr-btn aligned">
+                <span class="tag">했어요</span>
+                의도한 걸 해냈어요
+              </button>
+              <button class="qr-btn resisted">
+                <span class="tag">참았어요</span>
+                피하려던 걸 참아냈어요
+              </button>
+              <button class="qr-btn procras">
+                <span class="tag">또 미뤘어요</span>
+                해야 했지만 못 했어요
+              </button>
+              <button class="qr-btn relapsed">
+                <span class="tag">또 했어요</span>
+                안 하려던 걸 했어요
+              </button>
+            </div>
+          </div>
+
+          <div class="constellation">
+            <div class="label">RESISTED · 이번 달</div>
+            <svg width="180" height="60" viewBox="0 0 180 60">
+              <g fill="#b8923f">
+                <circle cx="14" cy="20" r="2.4" opacity="0.95" />
+                <circle cx="34" cy="38" r="2.6" opacity="0.85" />
+                <circle cx="56" cy="14" r="2.2" opacity="0.7" />
+                <circle cx="78" cy="32" r="2.8" opacity="1" />
+                <circle cx="100" cy="22" r="2.4" opacity="0.9" />
+                <circle cx="122" cy="44" r="2.6" opacity="0.8" />
+                <circle cx="144" cy="28" r="2.2" opacity="0.75" />
+                <circle cx="164" cy="18" r="2.6" opacity="0.95" />
+                <circle cx="50" cy="50" r="2" opacity="0.5" />
+                <circle cx="92" cy="50" r="2" opacity="0.55" />
+                <circle cx="132" cy="14" r="2" opacity="0.6" />
+              </g>
+              <g stroke="#b8923f" stroke-opacity="0.22" stroke-width="0.6" fill="none">
+                <path d="M14 20 L34 38 L56 14 L78 32 L100 22 L122 44 L144 28 L164 18" />
+              </g>
+            </svg>
+            <div class="count"><em>11</em>번 참아냈어</div>
+            <div class="desc">이번 달, 보내려다 멈춘 메시지</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div class="frame">
+    <div class="frame-label">
+      <span class="frame-step">04 · OVERVIEW</span>
+      <span class="frame-name">엄마 · 지난 30일</span>
+    </div>
+    <div class="phone">
+      <div class="screen">
+        <div class="status">
+          <span>9:14</span>
+          <span class="right">
+            <svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M2 9h3v6H2zM7 7h3v8H7zM12 5h3v10h-3zM17 3h3v12h-3z"/></svg>
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 11v2"/></svg>
+          </span>
+        </div>
+
+        <div class="scroll">
+          <div class="nav-bar">
+            <div class="left">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+              <span>엄마</span>
+            </div>
+            <div class="right">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+            </div>
+          </div>
+
+          <div class="month-summary">
+            <div class="ms-title">지난 30일</div>
+            <div class="ms-line">
+              마음을 둔 날이 <strong>22일</strong>이었어.
+              <em>그중 23번을 의도한 대로 보냈어.</em>
+            </div>
+          </div>
+
+          <div class="quad-grid">
+            <div class="quad resisted">
+              <div class="qlabel">RESISTED</div>
+              <div class="qnum">11</div>
+              <div class="qdesc">참아냈어 · 충동 메시지, 비교, 짜증</div>
+            </div>
+            <div class="quad aligned">
+              <div class="qlabel">ALIGNED</div>
+              <div class="qnum">12</div>
+              <div class="qdesc">의도한 걸 했어 · 통화 4, 안부 8</div>
+            </div>
+            <div class="quad procras">
+              <div class="qlabel">PROCRASTINATED</div>
+              <div class="qnum">7</div>
+              <div class="qdesc">하려다 못 했어 · 같은 항목 3주째</div>
+            </div>
+            <div class="quad relapsed">
+              <div class="qlabel">RELAPSED</div>
+              <div class="qnum">4</div>
+              <div class="qdesc">또 했어 · 늦은 밤 메시지 위주</div>
+            </div>
+          </div>
+
+          <div class="strand">
+            <div class="strand-title">
+              <span>30일 흐름</span>
+              <span>오늘 →</span>
+            </div>
+            <div class="strand-grid">
+              <div class="strand-cell sc r"></div>
+              <div class="strand-cell sc a"></div>
+              <div class="strand-cell sc p"></div>
+              <div class="strand-cell sc empty"></div>
+              <div class="strand-cell sc r"></div>
+              <div class="strand-cell sc a"></div>
+              <div class="strand-cell sc x"></div>
+              <div class="strand-cell sc r"></div>
+              <div class="strand-cell sc empty"></div>
+              <div class="strand-cell sc a"></div>
+              <div class="strand-cell sc r"></div>
+              <div class="strand-cell sc p"></div>
+              <div class="strand-cell sc a"></div>
+              <div class="strand-cell sc r"></div>
+              <div class="strand-cell sc empty"></div>
+
+              <div class="strand-cell sc x"></div>
+              <div class="strand-cell sc a"></div>
+              <div class="strand-cell sc r"></div>
+              <div class="strand-cell sc r"></div>
+              <div class="strand-cell sc empty"></div>
+              <div class="strand-cell sc p"></div>
+              <div class="strand-cell sc a"></div>
+              <div class="strand-cell sc r"></div>
+              <div class="strand-cell sc a"></div>
+              <div class="strand-cell sc x"></div>
+              <div class="strand-cell sc p"></div>
+              <div class="strand-cell sc a"></div>
+              <div class="strand-cell sc r"></div>
+              <div class="strand-cell sc a"></div>
+              <div class="strand-cell sc empty"></div>
+            </div>
+            <div class="legend">
+              <span><i class="r"></i>참았어</span>
+              <span><i class="a"></i>해냈어</span>
+              <span><i class="p"></i>미뤘어</span>
+              <span><i class="x"></i>또 했어</span>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:18px; border-color: rgba(137, 117, 200, 0.28); background: linear-gradient(135deg, var(--present-soft), var(--bg-2));">
+            <div style="display:flex; gap:10px; align-items:flex-start;">
+              <span style="font-size:18px; color: var(--present);">✦</span>
+              <div>
+                <div style="font-size:12px; color:var(--present); letter-spacing:0.08em; margin-bottom:6px; font-weight: 500;">PATTERN</div>
+                <div style="font-size:13.5px; line-height:1.55; color:var(--text);">
+                  일요일 밤 11시 이후, 메시지를 보내려다 다시 지운 적이
+                  <strong>4주 연속</strong> 있었어. 그 시간엔 어떤 마음일까?
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EVENING REVIEW -->
+  <div class="frame">
+    <div class="frame-label">
+      <span class="frame-step">05 · EVENING</span>
+      <span class="frame-name">하루를 돌아보기</span>
+    </div>
+    <div class="phone">
+      <div class="screen">
+        <div class="status">
+          <span>22:48</span>
+          <span class="right">
+            <svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M2 9h3v6H2zM7 7h3v8H7zM12 5h3v10h-3zM17 3h3v12h-3z"/></svg>
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 11v2"/></svg>
+          </span>
+        </div>
+
+        <div class="review-screen">
+          <div class="review-step">
+            <div class="step-bar done"></div>
+            <div class="step-bar done"></div>
+            <div class="step-bar active"></div>
+            <div class="step-bar"></div>
+            <div class="step-bar"></div>
+          </div>
+
+          <div class="review-prompt">3 / 5</div>
+          <h2 class="review-question">
+            오늘 저녁,<br/>
+            엄마에게 일어난 일이야.
+          </h2>
+
+          <div class="swipe-stack">
+            <div class="swipe-card behind2"></div>
+            <div class="swipe-card behind1"></div>
+            <div class="swipe-card front">
+              <div class="sc-time">오늘 · 19:42</div>
+              <div class="sc-event">
+                "저녁 7시쯤 전화 드리기"<br/>
+                — 시도했지만 통화 안 됨,<br/>
+                다시 걸지 않음.
+              </div>
+              <div class="sc-meta">
+                의도한 시간을 지켰어. 다만 한 번에 멈췄어.<br/>
+                이건 어디에 둘까?
+              </div>
+            </div>
+          </div>
+
+          <div class="swipe-guide">
+            <div class="sg up">
+              <span class="arrow">↑</span>
+              <div>
+                <span class="name">참았어</span>
+                <span class="desc">하지 말아야 할 걸 안 함</span>
+              </div>
+            </div>
+            <div class="sg right">
+              <span class="arrow">→</span>
+              <div>
+                <span class="name">해냈어</span>
+                <span class="desc">하려던 걸 했음</span>
+              </div>
+            </div>
+            <div class="sg left">
+              <span class="arrow">←</span>
+              <div>
+                <span class="name">미뤘어</span>
+                <span class="desc">하려다 못 했음</span>
+              </div>
+            </div>
+            <div class="sg down">
+              <span class="arrow">↓</span>
+              <div>
+                <span class="name">또 했어</span>
+                <span class="desc">안 하려던 걸 했음</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="review-footnote">
+            <em>판단이 아니라 기록이야. 어디에 두든 괜찮아.</em>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- WRAPPED -->
+  <div class="frame">
+    <div class="frame-label">
+      <span class="frame-step">06 · MONTHLY</span>
+      <span class="frame-name">4월 회고 · 한 장</span>
+    </div>
+    <div class="phone">
+      <div class="screen">
+        <div class="status">
+          <span>23:02</span>
+          <span class="right">
+            <svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M2 9h3v6H2zM7 7h3v8H7zM12 5h3v10h-3zM17 3h3v12h-3z"/></svg>
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 11v2"/></svg>
+          </span>
+        </div>
+
+        <div class="wrapped">
+          <div class="wrapped-header">
+            <div class="wrapped-month">2026 · APRIL · 엄마</div>
+            <div class="wrapped-x">×</div>
+          </div>
+
+          <div class="wrapped-eyebrow">이 달, 가장 자주 일어난 일</div>
+
+          <div class="wrapped-number">
+            11<sup>번</sup>
+          </div>
+
+          <div class="wrapped-line">
+            보내려다 멈춘 메시지가 있었어.<br/>
+            <em>그게 너의 한 달 중 가장 조용한 사랑이었어.</em>
+          </div>
+
+          <div class="wrapped-spacer"></div>
+
+          <svg viewBox="0 0 280 60" width="100%" height="60" style="margin-bottom: 18px;">
+            <defs>
+              <linearGradient id="gapfill" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#b8923f" stop-opacity="0.32"/>
+                <stop offset="100%" stop-color="#b8923f" stop-opacity="0.04"/>
+              </linearGradient>
+            </defs>
+            <path d="M0,18 L20,16 L40,18 L60,14 L80,18 L100,16 L120,12 L140,16 L160,14 L180,18 L200,12 L220,16 L240,14 L260,16 L280,18"
+                  stroke="#6b6359" stroke-width="1.2" fill="none" stroke-dasharray="3 3" opacity="0.7"/>
+            <path d="M0,30 L20,28 L40,34 L60,24 L80,30 L100,32 L120,22 L140,28 L160,26 L180,34 L200,22 L220,28 L240,26 L260,30 L280,28 L280,60 L0,60 Z"
+                  fill="url(#gapfill)"/>
+            <path d="M0,30 L20,28 L40,34 L60,24 L80,30 L100,32 L120,22 L140,28 L160,26 L180,34 L200,22 L220,28 L240,26 L260,30 L280,28"
+                  stroke="#b8923f" stroke-width="1.6" fill="none"/>
+          </svg>
+
+          <div class="wrapped-mini">
+            <div class="wm-item">
+              <div class="wm-label">의도-행동 일치율</div>
+              <div class="wm-value gold">68<span style="font-size:13px;color:var(--text-3);">%</span></div>
+              <div class="wm-sub">지난 달 +14%p</div>
+            </div>
+            <div class="wm-item">
+              <div class="wm-label">올해 남은 통화</div>
+              <div class="wm-value">약 34번</div>
+              <div class="wm-sub">주말 1회 기준</div>
+            </div>
+          </div>
+
+          <div class="wrapped-share">
+            <button class="ws-btn">저장</button>
+            <button class="ws-btn primary">한 장으로 내보내기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Frame legend / explanation -->
+<section class="legend-section">
+  <div class="ls-card">
+    <div class="ls-step">CHANGES IN v2</div>
+    <div class="ls-name">이번 버전에서 바뀐 것</div>
+    <div class="ls-desc">
+      관계 유형 카드 5종을 폐기하고 <strong>이름 한 줄</strong>로 단순화. 다양한 가족 형태를
+      배제하지 않고, 컨셉 정체성도 흐리지 않는다. 다크모드는 따뜻한 라이트 모드로 교체 —
+      "아침 부엌 햇살" 톤. 다크는 v1.1에서 야간 회고용 옵션으로 부활 예정.
+    </div>
+  </div>
+  <div class="ls-card">
+    <div class="ls-step">UNIVERSAL FEATURES</div>
+    <div class="ls-name">관계 유형과 무관한 기능들</div>
+    <div class="ls-desc">
+      홈 상단에 노출되는 <strong>올해 남은 주말 N번</strong>, <strong>생일 D-day</strong>,
+      월간 카드의 <strong>올해 남은 통화 약 N번</strong> — 모두 누구에게나 같은 무게의
+      시간 감각을 만든다. 어머니라서가 아니라 한 사람과 함께할 시간이 유한하기 때문에.
+    </div>
+  </div>
+  <div class="ls-card">
+    <div class="ls-step">SCHEMA SIMPLIFIED</div>
+    <div class="ls-name">DB 스키마도 가벼워짐</div>
+    <div class="ls-desc">
+      <code>persons</code> 테이블에서 <code>relation_type</code>, <code>custom_relation</code>
+      두 컬럼을 제거. 남은 건 <code>display_name</code>과 선택 <code>birthday</code>뿐.
+      RLS는 더 단순해지고, 미래 다인 지원 시 마이그레이션도 0줄.
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
