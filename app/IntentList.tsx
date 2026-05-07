@@ -1,6 +1,12 @@
 "use client";
 
-import { useState, useTransition, type FormEvent, type ReactNode } from "react";
+import {
+  useState,
+  useTransition,
+  useOptimistic,
+  type FormEvent,
+  type ReactNode,
+} from "react";
 import { useRouter } from "next/navigation";
 import { createIntent, archiveIntent } from "@/lib/actions/intents";
 import { recordEvent } from "@/lib/actions/events";
@@ -8,6 +14,10 @@ import type { Intent, IntentType, Quadrant } from "@/lib/types/db";
 import { Card, Pill, Input, cn } from "@/components/ui";
 
 const SOFT_LIMIT = 5;
+
+type OptimisticAction =
+  | { type: "add"; intent: Intent }
+  | { type: "archive"; intentId: string };
 
 interface Props {
   intents: Intent[];
@@ -49,53 +59,98 @@ const AVOID_OUTCOMES: OutcomeOption[] = [
   },
 ];
 
+function makeTempId(): string {
+  // crypto.randomUUID 미지원 환경 대비 fallback
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return `temp-${crypto.randomUUID()}`;
+  }
+  return `temp-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
 export function IntentList({ intents, personId }: Props) {
   const router = useRouter();
-  const [pending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const [adding, setAdding] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const isEmpty = intents.length === 0;
-  const overLimit = intents.length >= SOFT_LIMIT;
+  // 낙관적 UI — add/archive 즉시 반영, 서버 응답은 백그라운드
+  const [optimisticIntents, applyOptimistic] = useOptimistic<
+    Intent[],
+    OptimisticAction
+  >(intents, (current, action) => {
+    switch (action.type) {
+      case "add":
+        return [action.intent, ...current];
+      case "archive":
+        return current.filter((i) => i.id !== action.intentId);
+    }
+  });
+
+  const isEmpty = optimisticIntents.length === 0;
+  const overLimit = optimisticIntents.length >= SOFT_LIMIT;
 
   function handleAdd(payload: {
     intent_type: IntentType;
     title: string;
     why?: string;
   }) {
+    // 1) UI 즉시 닫기 (트랜지션 밖)
     setError(null);
+    setAdding(false);
+
+    const tempIntent: Intent = {
+      id: makeTempId(),
+      person_id: personId,
+      user_id: "",
+      intent_type: payload.intent_type,
+      title: payload.title,
+      why: payload.why ?? null,
+      due_date: null,
+      is_archived: false,
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    // 2) 낙관 추가 + 서버 동기화 (트랜지션 안)
     startTransition(async () => {
+      applyOptimistic({ type: "add", intent: tempIntent });
       const result = await createIntent({
         person_id: personId,
         intent_type: payload.intent_type,
         title: payload.title,
         why: payload.why,
       });
-      if (result.ok) {
-        setAdding(false);
-        router.refresh();
-      } else {
+      if (!result.ok) {
+        // 롤백: 폼 다시 열고 에러 표시. optimistic 상태는 transition 종료 시 자연 복귀.
         setError(result.error);
+        setAdding(true);
+        return;
       }
+      router.refresh();
     });
   }
 
   function handleArchive(intentId: string) {
     setError(null);
+    if (expandedId === intentId) setExpandedId(null);
+
     startTransition(async () => {
+      applyOptimistic({ type: "archive", intentId });
       const result = await archiveIntent(intentId);
       if (!result.ok) {
         setError(result.error);
         return;
       }
-      if (expandedId === intentId) setExpandedId(null);
       router.refresh();
     });
   }
 
   function handleRecord(intent: Intent, quadrant: Quadrant) {
+    // 즉시 접기 (트랜지션 밖)
     setError(null);
+    setExpandedId(null);
+
     startTransition(async () => {
       const result = await recordEvent({
         person_id: personId,
@@ -107,7 +162,6 @@ export function IntentList({ intents, personId }: Props) {
         setError(result.error);
         return;
       }
-      setExpandedId(null);
       router.refresh();
     });
   }
@@ -125,7 +179,7 @@ export function IntentList({ intents, personId }: Props) {
         <div className="flex items-center gap-2">
           {!isEmpty && (
             <Pill tone="muted" size="sm">
-              {intents.length}
+              {optimisticIntents.length}
             </Pill>
           )}
           {!isEmpty && !adding && (
@@ -150,15 +204,14 @@ export function IntentList({ intents, personId }: Props) {
           <EmptyState onAdd={() => setAdding(true)} />
         ) : (
           <>
-            {intents.length > 0 && (
+            {optimisticIntents.length > 0 && (
               <ul className="m-0 list-none p-0">
-                {intents.map((intent, i) => (
+                {optimisticIntents.map((intent, i) => (
                   <IntentRow
                     key={intent.id}
                     intent={intent}
-                    isLast={i === intents.length - 1 && !adding}
+                    isLast={i === optimisticIntents.length - 1 && !adding}
                     expanded={expandedId === intent.id}
-                    pending={pending}
                     onToggle={() => toggleExpand(intent.id)}
                     onArchive={() => handleArchive(intent.id)}
                     onRecord={(q) => handleRecord(intent, q)}
@@ -169,8 +222,7 @@ export function IntentList({ intents, personId }: Props) {
 
             {adding && (
               <AddForm
-                hasIntentsAbove={intents.length > 0}
-                pending={pending}
+                hasIntentsAbove={optimisticIntents.length > 0}
                 onCancel={() => {
                   setAdding(false);
                   setError(null);
@@ -201,7 +253,7 @@ export function IntentList({ intents, personId }: Props) {
 }
 
 // ─────────────────────────────────────────────────────────────
-// EmptyState — 첫 진입 시 보이는 부드러운 프롬프트
+// EmptyState
 // ─────────────────────────────────────────────────────────────
 function EmptyState({ onAdd }: { onAdd: () => void }) {
   return (
@@ -224,12 +276,12 @@ function EmptyState({ onAdd }: { onAdd: () => void }) {
 
 // ─────────────────────────────────────────────────────────────
 // IntentRow — 한 줄 + (탭 시) inline outcome 2버튼 (γ 패턴)
+// 모든 버튼 항상 클릭 가능. 사용자 escape 동선 막히지 않음.
 // ─────────────────────────────────────────────────────────────
 interface RowProps {
   intent: Intent;
   isLast: boolean;
   expanded: boolean;
-  pending: boolean;
   onToggle: () => void;
   onArchive: () => void;
   onRecord: (q: Quadrant) => void;
@@ -239,7 +291,6 @@ function IntentRow({
   intent,
   isLast,
   expanded,
-  pending,
   onToggle,
   onArchive,
   onRecord,
@@ -270,7 +321,7 @@ function IntentRow({
             {intent.title}
           </div>
           {intent.why ? (
-            <span className="mt-[3px] block text-[11.5px] text-ink-3">
+            <span className="mt-[3px] block text-[11.5px] text-ink-2">
               {intent.why}
             </span>
           ) : null}
@@ -278,8 +329,7 @@ function IntentRow({
         <button
           type="button"
           onClick={onArchive}
-          disabled={pending}
-          className="mt-[2px] grid h-6 w-6 flex-shrink-0 place-items-center rounded-full text-[14px] text-ink-3 transition-colors hover:bg-surface-2 hover:text-ink-2 disabled:opacity-50"
+          className="mt-[2px] grid h-6 w-6 flex-shrink-0 place-items-center rounded-full text-[14px] text-ink-3 transition-colors hover:bg-surface-2 hover:text-ink"
           aria-label="제거"
         >
           ×
@@ -293,10 +343,9 @@ function IntentRow({
               key={opt.quadrant}
               type="button"
               onClick={() => onRecord(opt.quadrant)}
-              disabled={pending}
               className={cn(
                 "flex-1 rounded-lg border px-2.5 py-1.5 text-[12.5px] font-medium",
-                "transition-opacity hover:opacity-80 disabled:opacity-50",
+                "transition-opacity hover:opacity-80",
                 opt.toneClass,
               )}
             >
@@ -310,11 +359,11 @@ function IntentRow({
 }
 
 // ─────────────────────────────────────────────────────────────
-// AddForm — 인라인 입력 (텍스트 + do/avoid 토글 + 선택 why)
+// AddForm — 인라인 입력
+// 취소 버튼은 항상 활성화 (사용자 escape 동선 보장)
 // ─────────────────────────────────────────────────────────────
 interface AddFormProps {
   hasIntentsAbove: boolean;
-  pending: boolean;
   onCancel: () => void;
   onSubmit: (payload: {
     intent_type: IntentType;
@@ -323,19 +372,14 @@ interface AddFormProps {
   }) => void;
 }
 
-function AddForm({
-  hasIntentsAbove,
-  pending,
-  onCancel,
-  onSubmit,
-}: AddFormProps) {
+function AddForm({ hasIntentsAbove, onCancel, onSubmit }: AddFormProps) {
   const [intentType, setIntentType] = useState<IntentType>("do");
   const [title, setTitle] = useState("");
   const [whyOpen, setWhyOpen] = useState(false);
   const [why, setWhy] = useState("");
 
   const trimmed = title.trim();
-  const canSubmit = trimmed.length > 0 && !pending;
+  const canSubmit = trimmed.length > 0;
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
@@ -378,7 +422,6 @@ function AddForm({
         onChange={(e) => setTitle(e.target.value)}
         autoFocus
         maxLength={200}
-        disabled={pending}
         aria-label="내용"
       />
 
@@ -390,7 +433,6 @@ function AddForm({
             value={why}
             onChange={(e) => setWhy(e.target.value)}
             maxLength={500}
-            disabled={pending}
             aria-label="왜"
           />
         </div>
@@ -398,7 +440,7 @@ function AddForm({
         <button
           type="button"
           onClick={() => setWhyOpen(true)}
-          className="mt-2 text-[11.5px] text-ink-3 transition-colors hover:text-ink-2"
+          className="mt-2 text-[11.5px] text-ink-2 transition-colors hover:text-ink"
         >
           왜인지 적어볼까요?
         </button>
@@ -408,8 +450,7 @@ function AddForm({
         <button
           type="button"
           onClick={onCancel}
-          disabled={pending}
-          className="rounded-lg border border-line bg-paper px-3 py-1.5 text-[12.5px] text-ink-2 hover:bg-surface-2 disabled:opacity-50"
+          className="rounded-lg border border-line bg-paper px-3 py-1.5 text-[12.5px] text-ink-2 hover:bg-surface-2"
         >
           취소
         </button>
@@ -423,7 +464,7 @@ function AddForm({
               : "cursor-not-allowed bg-surface-2 text-ink-3",
           )}
         >
-          {pending ? "..." : "추가"}
+          추가
         </button>
       </div>
     </form>
@@ -457,7 +498,7 @@ function TypeToggle({
         "flex-1 rounded-lg border py-2 text-[13px] transition-colors",
         active
           ? cn(activeClass, "font-medium")
-          : "border-line bg-paper text-ink-3 hover:bg-surface-2",
+          : "border-line bg-paper text-ink-2 hover:bg-surface-2",
       )}
     >
       {children}

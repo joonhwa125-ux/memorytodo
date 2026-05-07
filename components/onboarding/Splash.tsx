@@ -22,9 +22,9 @@ export interface SplashProps {
 export function Splash({
   onStart,
   brand = "기억할 일",
-  headlineTop = "한 사람과의 1년을",
-  headlineBottom = "조용히 기록합니다.",
-  subline = "당신이 가장 자주 떠올리는 한 사람.",
+  headlineTop = "한 사람을 향한",
+  headlineBottom = "오늘 할 일을 적습니다.",
+  subline = "매일 하나씩, 닿고 싶은 마음.",
   ctaLabel = "시작하기",
   footnote = "이름만 적으면 시작됩니다",
 }: SplashProps) {
