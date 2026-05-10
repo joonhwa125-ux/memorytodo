@@ -1,0 +1,1308 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>기억 — Clean UI 목업 v4</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+<link
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css"
+  rel="stylesheet"
+/>
+<style>
+  :root {
+    /* Clean white palette — Toss-inspired */
+    --bg:        #ffffff;
+    --bg-soft:   #f7f8fa;
+    --bg-2:      #f2f4f6;
+
+    --ink:       #191f28;
+    --ink-2:     #4e5968;
+    --ink-3:     #8b95a1;
+    --ink-4:     #b0b8c1;
+
+    --line:      #f0f2f4;
+    --line-2:    #e5e8eb;
+
+    --accent:    #3182f6;          /* primary blue (Toss) */
+    --accent-soft: #e8f1ff;
+
+    /* 4사분면 컬러 — 깔끔하게 정제 */
+    --aligned:   #22c55e;
+    --aligned-soft: #ecfdf5;
+    --resisted:  #d4a72c;
+    --resisted-soft: #fef9e7;
+    --procras:   #8b95a1;
+    --procras-soft: #f2f4f6;
+    --relapsed:  #ef5350;
+    --relapsed-soft: #fef2f2;
+
+    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04);
+    --shadow-pop:  0 4px 16px rgba(0, 0, 0, 0.08);
+  }
+
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    background: var(--bg-soft);
+    color: var(--ink);
+    font-family: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  body { min-height: 100vh; padding: 48px 24px 96px; }
+
+  /* ========== document header ========== */
+  .doc-header { max-width: 1480px; margin: 0 auto 40px; }
+  .doc-eyebrow { font-size: 12px; letter-spacing: 0.16em; color: var(--ink-3); text-transform: uppercase; margin-bottom: 8px; font-weight: 500; }
+  .doc-title { font-size: 32px; font-weight: 700; letter-spacing: -0.025em; margin: 0 0 12px; color: var(--ink); }
+  .doc-sub { color: var(--ink-2); font-size: 15px; max-width: 760px; line-height: 1.7; }
+  .doc-sub strong { color: var(--ink); font-weight: 600; }
+
+  .row-label {
+    max-width: 1480px;
+    margin: 32px auto 20px;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+  .row-label .num { font-size: 11px; letter-spacing: 0.2em; color: var(--ink-3); font-weight: 600; }
+  .row-label .name { font-size: 14px; font-weight: 500; color: var(--ink-2); }
+
+  .frames {
+    display: flex;
+    gap: 28px;
+    justify-content: center;
+    overflow-x: auto;
+    padding-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .frame { width: 360px; flex-shrink: 0; }
+  .frame-label { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; }
+  .frame-step { font-size: 11px; letter-spacing: 0.18em; color: var(--ink-3); font-weight: 600; }
+  .frame-name { font-size: 15px; font-weight: 600; color: var(--ink); }
+
+  /* ========== phone shell ========== */
+  .phone {
+    height: 760px;
+    border-radius: 44px;
+    background: #f0f2f4;
+    padding: 12px;
+    box-shadow:
+      0 24px 60px rgba(25, 31, 40, 0.08),
+      inset 0 0 0 1px rgba(25, 31, 40, 0.04);
+    position: relative;
+  }
+  .phone::before {
+    content: "";
+    position: absolute;
+    top: 22px; left: 50%;
+    transform: translateX(-50%);
+    width: 90px; height: 26px;
+    background: #191f28;
+    border-radius: 14px;
+    z-index: 3;
+  }
+  .screen {
+    width: 100%;
+    height: 100%;
+    border-radius: 34px;
+    background: var(--bg);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .status {
+    height: 44px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    padding: 0 28px 6px;
+    font-size: 12px;
+    color: var(--ink-2);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+  }
+  .status .right { display: flex; gap: 5px; align-items: center; }
+  .status .right svg { opacity: 0.6; }
+
+  .scroll {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px 20px 28px;
+  }
+  .scroll::-webkit-scrollbar { width: 0; }
+
+  /* ============ ONBOARDING 1: SPLASH ============ */
+  .onb-splash {
+    flex: 1;
+    background: var(--bg);
+    padding: 40px 28px 32px;
+    display: flex;
+    flex-direction: column;
+  }
+  .onb-splash-top {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+  }
+  .onb-headline {
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.3;
+    color: var(--ink);
+    margin: 0 0 16px;
+  }
+  .onb-headline em { font-style: normal; color: var(--accent); }
+  .onb-helper {
+    font-size: 16px;
+    color: var(--ink-2);
+    line-height: 1.6;
+    max-width: 280px;
+    margin: 0;
+  }
+  .onb-cta-clean {
+    width: 100%;
+    padding: 17px 20px;
+    border-radius: 14px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    letter-spacing: -0.01em;
+  }
+  .onb-foot-clean {
+    margin-top: 14px;
+    text-align: center;
+    font-size: 12.5px;
+    color: var(--ink-3);
+  }
+
+  /* ============ ONBOARDING 2: NAME INPUT ============ */
+  .onb-name {
+    flex: 1;
+    padding: 56px 28px 28px;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+  }
+  .onb-progress {
+    height: 3px;
+    background: var(--bg-2);
+    border-radius: 2px;
+    margin-bottom: 32px;
+    overflow: hidden;
+  }
+  .onb-progress-fill {
+    width: 50%;
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  .onb-q {
+    font-size: 24px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.4;
+    color: var(--ink);
+    margin: 0 0 12px;
+  }
+  .onb-help-clean {
+    font-size: 14px;
+    color: var(--ink-2);
+    line-height: 1.6;
+    margin-bottom: 32px;
+  }
+  .onb-input-clean {
+    width: 100%;
+    padding: 18px 16px;
+    border: none;
+    background: var(--bg-2);
+    border-radius: 12px;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--ink);
+    font-family: inherit;
+    outline: none;
+    margin-bottom: 14px;
+  }
+  .onb-input-clean::placeholder { color: var(--ink-4); font-weight: 400; }
+  .onb-chips-clean {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 32px;
+  }
+  .chip-clean {
+    font-size: 13px;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: var(--bg-2);
+    color: var(--ink-2);
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+  }
+
+  .onb-spacer { flex: 1; }
+  .onb-cta-row-clean { display: flex; gap: 8px; }
+  .onb-skip-clean {
+    flex: 1; padding: 17px;
+    border-radius: 14px;
+    background: var(--bg-2);
+    border: none;
+    color: var(--ink-2);
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .onb-next-clean {
+    flex: 2; padding: 17px;
+    border-radius: 14px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* ============ HOME ============ */
+  .home-top {
+    padding: 12px 4px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .home-greet { font-size: 14px; color: var(--ink-3); font-weight: 500; }
+  .icon-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--bg-2);
+    display: grid; place-items: center;
+    color: var(--ink-2);
+    cursor: pointer;
+  }
+
+  .person-block {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .avatar-clean {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    display: grid; place-items: center;
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+  }
+  .person-name-clean {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+  .person-tag {
+    font-size: 12.5px;
+    color: var(--ink-3);
+    margin-top: 2px;
+    font-weight: 500;
+  }
+
+  /* Big stats row — Toss style */
+  .stats-row {
+    margin-top: 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .stat-card {
+    background: var(--bg-2);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .stat-label {
+    font-size: 12.5px;
+    color: var(--ink-3);
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .stat-value {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  .stat-value em { font-style: normal; color: var(--accent); }
+  .stat-sub {
+    font-size: 11.5px;
+    color: var(--ink-3);
+    margin-top: 2px;
+    font-weight: 500;
+  }
+
+  /* Section header */
+  .section-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 32px;
+    margin-bottom: 14px;
+  }
+  .section-title {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+  }
+  .section-action {
+    font-size: 13px;
+    color: var(--ink-3);
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  /* Intent list — clean rows */
+  .intent-list {
+    background: var(--bg);
+    border-radius: 14px;
+  }
+  .intent-row-clean {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .intent-row-clean:last-child { border-bottom: none; }
+  .intent-tag {
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 4px 8px;
+    border-radius: 6px;
+    margin-top: 1px;
+    line-height: 1;
+  }
+  .intent-tag.do {
+    background: var(--aligned-soft);
+    color: var(--aligned);
+  }
+  .intent-tag.avoid {
+    background: var(--resisted-soft);
+    color: var(--resisted);
+  }
+  .intent-body { flex: 1; }
+  .intent-title {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+    line-height: 1.4;
+  }
+  .intent-meta {
+    font-size: 12px;
+    color: var(--ink-3);
+    margin-top: 4px;
+    line-height: 1.4;
+  }
+
+  .add-intent-btn {
+    width: 100%;
+    margin-top: 12px;
+    padding: 14px;
+    border-radius: 12px;
+    background: var(--bg-2);
+    border: none;
+    color: var(--ink-2);
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  /* Quick record — 2x2 simple grid */
+  .quick-record-clean {
+    margin-top: 28px;
+  }
+  .qr-grid-clean {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .qr-btn-clean {
+    padding: 14px 12px;
+    border-radius: 12px;
+    border: none;
+    background: var(--bg-2);
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .qr-btn-clean .label {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .qr-btn-clean .desc {
+    font-size: 11.5px;
+    color: var(--ink-3);
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  .qr-btn-clean.aligned  { background: var(--aligned-soft); }
+  .qr-btn-clean.aligned .label { color: var(--aligned); }
+  .qr-btn-clean.resisted { background: var(--resisted-soft); }
+  .qr-btn-clean.resisted .label { color: var(--resisted); }
+  .qr-btn-clean.procras  { background: var(--procras-soft); }
+  .qr-btn-clean.procras .label { color: var(--procras); }
+  .qr-btn-clean.relapsed { background: var(--relapsed-soft); }
+  .qr-btn-clean.relapsed .label { color: var(--relapsed); }
+
+  /* ============ OVERVIEW ============ */
+  .ov-nav {
+    padding: 12px 4px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .ov-back {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    color: var(--ink-2);
+    cursor: pointer;
+  }
+  .ov-nav-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .ov-hero {
+    margin-top: 28px;
+    padding: 0 4px;
+  }
+  .ov-hero-eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+  .ov-hero-line {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.4;
+    color: var(--ink);
+  }
+  .ov-hero-line em {
+    font-style: normal;
+    color: var(--accent);
+  }
+
+  .ov-stat-big {
+    margin-top: 24px;
+    padding: 22px 20px;
+    background: var(--accent-soft);
+    border-radius: 18px;
+  }
+  .ov-stat-big-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 6px;
+  }
+  .ov-stat-big-value {
+    font-size: 44px;
+    font-weight: 800;
+    color: var(--ink);
+    letter-spacing: -0.04em;
+    line-height: 1.1;
+  }
+  .ov-stat-big-value sub {
+    font-size: 18px;
+    color: var(--ink-2);
+    font-weight: 600;
+    margin-left: 4px;
+    vertical-align: baseline;
+  }
+  .ov-stat-big-sub {
+    font-size: 12.5px;
+    color: var(--ink-2);
+    margin-top: 4px;
+    font-weight: 500;
+  }
+
+  /* 4 quadrant cards */
+  .quad-clean {
+    margin-top: 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .qc {
+    padding: 16px;
+    border-radius: 14px;
+    background: var(--bg-2);
+  }
+  .qc.aligned  { background: var(--aligned-soft); }
+  .qc.resisted { background: var(--resisted-soft); }
+  .qc.procras  { background: var(--procras-soft); }
+  .qc.relapsed { background: var(--relapsed-soft); }
+  .qc-label {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    color: var(--ink-3);
+  }
+  .qc.aligned  .qc-label { color: var(--aligned); }
+  .qc.resisted .qc-label { color: var(--resisted); }
+  .qc.procras  .qc-label { color: var(--procras); }
+  .qc.relapsed .qc-label { color: var(--relapsed); }
+  .qc-num {
+    font-size: 30px;
+    font-weight: 800;
+    margin-top: 2px;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: var(--ink);
+  }
+  .qc-desc {
+    font-size: 12px;
+    color: var(--ink-2);
+    margin-top: 8px;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  /* Strand */
+  .strand-clean { margin-top: 28px; }
+  .strand-head {
+    display: flex; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .strand-head .t { font-size: 14px; font-weight: 600; color: var(--ink); }
+  .strand-head .s { font-size: 12px; color: var(--ink-3); font-weight: 500; }
+  .strand-grid-clean {
+    display: grid;
+    grid-template-columns: repeat(15, 1fr);
+    gap: 4px;
+  }
+  .sc-clean {
+    aspect-ratio: 1 / 1;
+    border-radius: 4px;
+    background: var(--bg-2);
+  }
+  .sc-clean.r { background: var(--resisted); opacity: 0.85; }
+  .sc-clean.a { background: var(--aligned); opacity: 0.75; }
+  .sc-clean.p { background: var(--procras); opacity: 0.45; }
+  .sc-clean.x { background: var(--relapsed); opacity: 0.7; }
+
+  .legend-clean {
+    display: flex; gap: 14px; flex-wrap: wrap;
+    margin-top: 14px;
+    font-size: 12px;
+    color: var(--ink-2);
+    font-weight: 500;
+  }
+  .legend-clean span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend-clean i { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+  .legend-clean i.r { background: var(--resisted); }
+  .legend-clean i.a { background: var(--aligned); }
+  .legend-clean i.p { background: var(--procras); }
+  .legend-clean i.x { background: var(--relapsed); }
+
+  /* ============ Footer notes ============ */
+  .legend-section {
+    max-width: 1480px;
+    margin: 64px auto 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  @media (max-width: 1500px) {
+    .legend-section { grid-template-columns: 1fr; }
+  }
+  .ls-card {
+    border-radius: 18px;
+    padding: 24px;
+    background: var(--bg);
+  }
+  .ls-step { font-size: 11px; letter-spacing: 0.18em; color: var(--ink-3); font-weight: 600; }
+  .ls-name { font-size: 17px; font-weight: 700; margin: 8px 0 10px; color: var(--ink); letter-spacing: -0.015em; }
+  .ls-desc { font-size: 14px; color: var(--ink-2); line-height: 1.7; }
+  .ls-desc strong { color: var(--ink); font-weight: 600; }
+
+  /* ============ ONBOARDING 3: IMPORTANT DATES ============ */
+  .onb-dates {
+    flex: 1;
+    padding: 56px 28px 28px;
+    display: flex;
+    flex-direction: column;
+    background: var(--bg);
+  }
+  .onb-progress.full .onb-progress-fill { width: 100%; }
+
+  .dates-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+    margin-bottom: 12px;
+  }
+  .date-item {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    background: var(--bg-2);
+    border-radius: 12px;
+  }
+  .date-item-meta { flex: 1; }
+  .date-item-label {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .date-item-value {
+    font-size: 12.5px;
+    color: var(--ink-2);
+    font-weight: 500;
+    margin-top: 2px;
+  }
+  .date-item-x {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    color: var(--ink-3);
+    cursor: pointer;
+    background: rgba(0,0,0,0.03);
+  }
+  .add-date-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+  }
+
+  /* ============ INTENT ADD / EDIT (BOTTOM SHEET) ============ */
+  .sheet-screen { background: var(--bg); }
+  .sheet-handle {
+    width: 36px;
+    height: 4px;
+    background: var(--line-2);
+    border-radius: 4px;
+    margin: 10px auto 0;
+  }
+  .sheet-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 24px 8px;
+  }
+  .sheet-title {
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+  }
+  .sheet-close {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: grid; place-items: center;
+    background: var(--bg-2);
+    color: var(--ink-2);
+    cursor: pointer;
+  }
+  .sheet-body {
+    flex: 1;
+    padding: 12px 24px 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .field-label {
+    font-size: 13px;
+    color: var(--ink-2);
+    font-weight: 600;
+    margin: 18px 0 8px;
+  }
+  .field-label.first { margin-top: 4px; }
+
+  .toggle-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .toggle-opt {
+    padding: 14px;
+    border-radius: 12px;
+    background: var(--bg-2);
+    text-align: center;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.15s;
+  }
+  .toggle-opt.active {
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .toggle-opt-label {
+    font-size: 14.5px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+  .toggle-opt.active .toggle-opt-label { color: var(--accent); }
+  .toggle-opt-desc {
+    font-size: 11.5px;
+    color: var(--ink-3);
+    margin-top: 3px;
+    font-weight: 500;
+  }
+
+  .field-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: none;
+    background: var(--bg-2);
+    border-radius: 12px;
+    font-size: 15px;
+    color: var(--ink);
+    font-family: inherit;
+    font-weight: 500;
+    outline: none;
+  }
+  .field-input::placeholder { color: var(--ink-4); font-weight: 400; }
+  .field-textarea {
+    resize: none;
+    min-height: 76px;
+    line-height: 1.5;
+  }
+
+  .sheet-cta {
+    margin-top: 24px;
+    width: 100%;
+    padding: 17px;
+    border-radius: 14px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .ic { width: 14px; height: 14px; vertical-align: middle; }
+</style>
+</head>
+<body>
+
+<header class="doc-header">
+  <div class="doc-eyebrow">Mockup v4 · 2026-05-10 · Clean UI</div>
+  <h1 class="doc-title">기억 — Clean UI 방향 제안</h1>
+  <p class="doc-sub">
+    v3의 따뜻한 갈색 톤을 <strong>흰 배경 + 강한 타이포그래피 + 미니멀 컬러</strong> 방향으로 재해석.
+    Toss 스타일을 참조해 큰 숫자와 명확한 위계로 사용자가 한눈에 정보를 읽고, 다음 행동을 쉽게
+    선택할 수 있도록 설계. 따뜻함은 컬러가 아닌 <strong>워딩과 여백</strong>으로 전달.
+  </p>
+</header>
+
+<!-- ============================================================ -->
+<!-- ROW 1: ONBOARDING -->
+<!-- ============================================================ -->
+<div class="row-label">
+  <span class="num">FIRST RUN</span>
+  <span class="name">앱을 처음 켰을 때</span>
+</div>
+
+<div class="frames">
+
+  <!-- ONB 1: Splash -->
+  <div class="frame">
+    <div class="frame-label">
+      <span class="frame-step">01</span>
+      <span class="frame-name">시작 화면</span>
+    </div>
+    <div class="phone">
+      <div class="screen">
+        <div class="status">
+          <span>9:14</span>
+          <span class="right">
+            <svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M2 9h3v6H2zM7 7h3v8H7zM12 5h3v10h-3zM17 3h3v12h-3z"/></svg>
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 11v2"/></svg>
+          </span>
+        </div>
+        <div class="onb-splash">
+          <div class="onb-splash-top">
+            <h1 class="onb-headline">
+              소중한 사람을 위한<br/>
+              <em>할 일</em>을 적어둡니다.
+            </h1>
+            <p class="onb-helper">
+              하고 싶은 일과 하지 말아야 할 일.<br/>
+              그리고 그 사람과 남은 시간.
+            </p>
+          </div>
+          <button class="onb-cta-clean">시작하기</button>
+          <div class="onb-foot-clean">로그인은 이름을 적은 후에 묻습니다</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ONB 2: Name Input -->
+  <div class="frame">
+    <div class="frame-label">
+      <span class="frame-step">02</span>
+      <span class="frame-name">이름 입력</span>
+    </div>
+    <div class="phone">
+      <div class="screen">
+        <div class="status">
+          <span>9:14</span>
+          <span class="right">
+            <svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M2 9h3v6H2zM7 7h3v8H7zM12 5h3v10h-3zM17 3h3v12h-3z"/></svg>
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 11v2"/></svg>
+          </span>
+        </div>
+        <div class="onb-name">
+          <div class="onb-progress"><div class="onb-progress-fill"></div></div>
+
+          <h2 class="onb-q" style="margin-bottom: 32px;">
+            누구를 위한<br/>기록인가요?
+          </h2>
+
+          <input class="onb-input-clean" value="엄마" placeholder="예: 엄마, 자기야, 민지" />
+
+          <div class="onb-chips-clean">
+            <span class="chip-clean">엄마</span>
+            <span class="chip-clean">아빠</span>
+            <span class="chip-clean">자기야</span>
+            <span class="chip-clean">민지</span>
+            <span class="chip-clean">할머니</span>
+          </div>
+
+          <div class="onb-spacer"></div>
+
+          <div class="onb-cta-row-clean">
+            <button class="onb-skip-clean">건너뛰기</button>
+            <button class="onb-next-clean">다음</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ONB 3: Important Dates -->
+  <div class="frame">
+    <div class="frame-label">
+      <span class="frame-step">03</span>
+      <span class="frame-name">의미있는 날</span>
+    </div>
+    <div class="phone">
+      <div class="screen">
+        <div class="status">
+          <span>9:14</span>
+          <span class="right">
+            <svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M2 9h3v6H2zM7 7h3v8H7zM12 5h3v10h-3zM17 3h3v12h-3z"/></svg>
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 11v2"/></svg>
+          </span>
+        </div>
+        <div class="onb-dates">
+          <div class="onb-progress full"><div class="onb-progress-fill"></div></div>
+
+          <h2 class="onb-q" style="margin-bottom: 8px;">
+            기억하고 싶은<br/>날이 있나요?
+          </h2>
+          <p class="onb-help-clean" style="margin-bottom: 4px;">
+            생일, 결혼기념일, 어버이날 — 자유롭게 적어주세요.
+          </p>
+
+          <div class="dates-list">
+            <div class="date-item">
+              <div class="date-item-meta">
+                <div class="date-item-label">생일</div>
+                <div class="date-item-value">8월 7일</div>
+              </div>
+              <div class="date-item-x">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </div>
+            </div>
+            <div class="date-item">
+              <div class="date-item-meta">
+                <div class="date-item-label">어버이날</div>
+                <div class="date-item-value">5월 8일</div>
+              </div>
+              <div class="date-item-x">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+              </div>
+            </div>
+          </div>
+
+          <button class="add-date-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
+            날짜 추가하기
+          </button>
+
+          <div class="onb-spacer"></div>
+
+          <div class="onb-cta-row-clean">
+            <button class="onb-skip-clean">건너뛰기</button>
+            <button class="onb-next-clean">시작</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============================================================ -->
+<!-- ROW 2: DAILY USE -->
+<!-- ============================================================ -->
+<div class="row-label" style="margin-top: 56px;">
+  <span class="num">DAILY USE</span>
+  <span class="name">매일 마주하는 화면</span>
+</div>
+
+<div class="frames">
+
+  <!-- HOME -->
+  <div class="frame">
+    <div class="frame-label">
+      <span class="frame-step">04</span>
+      <span class="frame-name">홈</span>
+    </div>
+    <div class="phone">
+      <div class="screen">
+        <div class="status">
+          <span>9:14</span>
+          <span class="right">
+            <svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M2 9h3v6H2zM7 7h3v8H7zM12 5h3v10h-3zM17 3h3v12h-3z"/></svg>
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 11v2"/></svg>
+          </span>
+        </div>
+
+        <div class="scroll">
+          <div class="home-top">
+            <div class="home-greet">5월 10일 토요일</div>
+            <div class="icon-btn">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/></svg>
+            </div>
+          </div>
+
+          <div class="person-block">
+            <div class="avatar-clean">엄</div>
+            <div>
+              <div class="person-name-clean">엄마</div>
+              <div class="person-tag">마음에 둔 일 3개</div>
+            </div>
+          </div>
+
+          <div class="stats-row">
+            <div class="stat-card">
+              <div class="stat-label">올해 남은 주말</div>
+              <div class="stat-value"><em>34</em>번</div>
+              <div class="stat-sub">12월 31일까지</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">생일까지</div>
+              <div class="stat-value"><em>D-92</em></div>
+              <div class="stat-sub">8월 7일</div>
+            </div>
+          </div>
+
+          <div class="section-head">
+            <div class="section-title">오늘의 할 일</div>
+            <div class="section-action">전체 보기</div>
+          </div>
+
+          <div class="intent-list">
+            <div class="intent-row-clean">
+              <span class="intent-tag do">할 일</span>
+              <div class="intent-body">
+                <div class="intent-title">저녁 7시쯤 전화 드리기</div>
+                <div class="intent-meta">지난주 "주말에 통화하자" 약속</div>
+              </div>
+            </div>
+            <div class="intent-row-clean">
+              <span class="intent-tag do">할 일</span>
+              <div class="intent-body">
+                <div class="intent-title">점심 메뉴 사진 한 장 보내기</div>
+              </div>
+            </div>
+            <div class="intent-row-clean">
+              <span class="intent-tag avoid">참기</span>
+              <div class="intent-body">
+                <div class="intent-title">통화 중 짜증내지 않기</div>
+                <div class="intent-meta">최근 3번 통화에서 반복됨</div>
+              </div>
+            </div>
+          </div>
+
+          <button class="add-intent-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 5v14M5 12h14"/></svg>
+            할 일 추가
+          </button>
+
+          <div class="quick-record-clean">
+            <div class="section-head" style="margin-top: 8px;">
+              <div class="section-title">방금 어땠어요?</div>
+            </div>
+            <div class="qr-grid-clean">
+              <button class="qr-btn-clean aligned">
+                <span class="label">해냈어</span>
+                <span class="desc">하려던 걸 했어요</span>
+              </button>
+              <button class="qr-btn-clean resisted">
+                <span class="label">참았어</span>
+                <span class="desc">하지 않으려던 걸 참았어요</span>
+              </button>
+              <button class="qr-btn-clean procras">
+                <span class="label">미뤘어</span>
+                <span class="desc">하려다 못 했어요</span>
+              </button>
+              <button class="qr-btn-clean relapsed">
+                <span class="label">또 했어</span>
+                <span class="desc">안 하려던 걸 했어요</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OVERVIEW -->
+  <div class="frame">
+    <div class="frame-label">
+      <span class="frame-step">05</span>
+      <span class="frame-name">지난 30일</span>
+    </div>
+    <div class="phone">
+      <div class="screen">
+        <div class="status">
+          <span>9:14</span>
+          <span class="right">
+            <svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M2 9h3v6H2zM7 7h3v8H7zM12 5h3v10h-3zM17 3h3v12h-3z"/></svg>
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 11v2"/></svg>
+          </span>
+        </div>
+
+        <div class="scroll">
+          <div class="ov-nav">
+            <div class="ov-back">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+            </div>
+            <div class="ov-nav-title">엄마 · 지난 30일</div>
+          </div>
+
+          <div class="ov-hero">
+            <div class="ov-hero-eyebrow">DEAR. 엄마</div>
+            <div class="ov-hero-line">
+              마음에 둔 날이 <em>22일</em>,<br/>
+              그중 <em>23번</em>을 의도대로 보냈어요.
+            </div>
+          </div>
+
+          <div class="ov-stat-big">
+            <div class="ov-stat-big-label">의도-행동 일치율</div>
+            <div class="ov-stat-big-value">68<sub>%</sub></div>
+            <div class="ov-stat-big-sub">지난 달 대비 +14%p</div>
+          </div>
+
+          <div class="quad-clean">
+            <div class="qc aligned">
+              <div class="qc-label">해냈어</div>
+              <div class="qc-num">12</div>
+              <div class="qc-desc">통화 4회, 안부 8회</div>
+            </div>
+            <div class="qc resisted">
+              <div class="qc-label">참았어</div>
+              <div class="qc-num">11</div>
+              <div class="qc-desc">충동 메시지, 짜증</div>
+            </div>
+            <div class="qc procras">
+              <div class="qc-label">미뤘어</div>
+              <div class="qc-num">7</div>
+              <div class="qc-desc">같은 항목 3주째</div>
+            </div>
+            <div class="qc relapsed">
+              <div class="qc-label">또 했어</div>
+              <div class="qc-num">4</div>
+              <div class="qc-desc">늦은 밤 메시지</div>
+            </div>
+          </div>
+
+          <div class="strand-clean">
+            <div class="strand-head">
+              <span class="t">30일 흐름</span>
+              <span class="s">오늘 →</span>
+            </div>
+            <div class="strand-grid-clean">
+              <div class="sc-clean r"></div>
+              <div class="sc-clean a"></div>
+              <div class="sc-clean p"></div>
+              <div class="sc-clean"></div>
+              <div class="sc-clean r"></div>
+              <div class="sc-clean a"></div>
+              <div class="sc-clean x"></div>
+              <div class="sc-clean r"></div>
+              <div class="sc-clean"></div>
+              <div class="sc-clean a"></div>
+              <div class="sc-clean r"></div>
+              <div class="sc-clean p"></div>
+              <div class="sc-clean a"></div>
+              <div class="sc-clean r"></div>
+              <div class="sc-clean"></div>
+
+              <div class="sc-clean x"></div>
+              <div class="sc-clean a"></div>
+              <div class="sc-clean r"></div>
+              <div class="sc-clean r"></div>
+              <div class="sc-clean"></div>
+              <div class="sc-clean p"></div>
+              <div class="sc-clean a"></div>
+              <div class="sc-clean r"></div>
+              <div class="sc-clean a"></div>
+              <div class="sc-clean x"></div>
+              <div class="sc-clean p"></div>
+              <div class="sc-clean a"></div>
+              <div class="sc-clean r"></div>
+              <div class="sc-clean a"></div>
+              <div class="sc-clean"></div>
+            </div>
+            <div class="legend-clean">
+              <span><i class="a"></i>해냈어</span>
+              <span><i class="r"></i>참았어</span>
+              <span><i class="p"></i>미뤘어</span>
+              <span><i class="x"></i>또 했어</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============================================================ -->
+<!-- ROW 3: ACTIONS -->
+<!-- ============================================================ -->
+<div class="row-label" style="margin-top: 56px;">
+  <span class="num">ACTIONS</span>
+  <span class="name">할 일을 추가하거나 고칠 때</span>
+</div>
+
+<div class="frames">
+
+  <!-- INTENT ADD/EDIT -->
+  <div class="frame">
+    <div class="frame-label">
+      <span class="frame-step">06</span>
+      <span class="frame-name">할 일 추가/편집</span>
+    </div>
+    <div class="phone">
+      <div class="screen sheet-screen">
+        <div class="status">
+          <span>9:14</span>
+          <span class="right">
+            <svg class="ic" viewBox="0 0 24 24" fill="currentColor"><path d="M2 9h3v6H2zM7 7h3v8H7zM12 5h3v10h-3zM17 3h3v12h-3z"/></svg>
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 11v2"/></svg>
+          </span>
+        </div>
+        <div class="sheet-handle"></div>
+        <div class="sheet-head">
+          <div class="sheet-title">할 일 추가</div>
+          <div class="sheet-close">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M18 6L6 18M6 6l12 12"/></svg>
+          </div>
+        </div>
+        <div class="sheet-body">
+          <div class="field-label first">종류</div>
+          <div class="toggle-pair">
+            <div class="toggle-opt active">
+              <div class="toggle-opt-label">할 일</div>
+              <div class="toggle-opt-desc">하고 싶은 일</div>
+            </div>
+            <div class="toggle-opt">
+              <div class="toggle-opt-label">참기</div>
+              <div class="toggle-opt-desc">하지 말아야 할 일</div>
+            </div>
+          </div>
+
+          <div class="field-label">어떤 일인가요?</div>
+          <input class="field-input" value="저녁 7시쯤 전화 드리기" placeholder="예: 주말마다 안부 전화" />
+
+          <div class="field-label">왜 마음에 두었나요? <span style="color:var(--ink-3); font-weight:500;">(선택)</span></div>
+          <textarea class="field-input field-textarea" placeholder="간단한 메모">지난주 "주말에 통화하자" 약속</textarea>
+
+          <div class="field-label">마감일 <span style="color:var(--ink-3); font-weight:500;">(선택)</span></div>
+          <input class="field-input" value="2026-05-10" placeholder="YYYY-MM-DD" />
+
+          <button class="sheet-cta">저장</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ Footer notes ============ -->
+<section class="legend-section">
+  <div class="ls-card">
+    <div class="ls-step">DESIGN PRINCIPLE</div>
+    <div class="ls-name">흰 배경 + 강한 타이포</div>
+    <div class="ls-desc">
+      배경은 <strong>#ffffff</strong> 기본, 카드는 <strong>#f2f4f6</strong>의 옅은 회색.
+      장식 컬러를 줄이고 <strong>큰 숫자와 굵은 제목</strong>으로 위계를 만든다. 4사분면
+      컬러는 부드럽게 정제(연두/금/회색/산호)해 정보 전달용으로만 사용.
+    </div>
+  </div>
+  <div class="ls-card">
+    <div class="ls-step">UX SIMPLIFIED</div>
+    <div class="ls-name">한 화면, 세 영역</div>
+    <div class="ls-desc">
+      홈을 <strong>① 사람 + 시간 stats</strong>, <strong>② 오늘의 할 일</strong>,
+      <strong>③ 방금 어땠어요?</strong>의 세 영역으로 단순화. "별자리" 같은 장식적
+      요소는 제거하고, "할 일 추가" 버튼을 명확히 노출해 다음 행동을 안내.
+    </div>
+  </div>
+  <div class="ls-card">
+    <div class="ls-step">WORDING UPDATE</div>
+    <div class="ls-name">행동을 부르는 워딩</div>
+    <div class="ls-desc">
+      "지금 이 순간 기록" → <strong>"방금 어땠어요?"</strong>로 부드럽게.
+      "오늘 마음에 둔 것" → <strong>"오늘의 할 일"</strong>로 직관적으로.
+      4사분면 라벨(해냈어/참았어/미뤘어/또 했어)은 v3 그대로 유지.
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
