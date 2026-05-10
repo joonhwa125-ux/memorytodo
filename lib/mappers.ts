@@ -30,7 +30,7 @@ export function uiPersonFromDb(
 ): UiPerson {
   return {
     displayName: db.display_name,
-    birthday: db.birthday,
+    birthday: null, // schema에서 제거됨 (의미있는 날 테이블로 이전)
     lastThoughtOfAt,
   };
 }

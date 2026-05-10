@@ -1,4 +1,4 @@
-// 시간 유틸 — 보편적 UX (남은 주말, 생일 D-day 등)
+// 시간 유틸 — 보편적 UX (남은 주말, 의미있는 날 D-day 등)
 import {
   differenceInCalendarDays,
   endOfYear,
@@ -7,9 +7,10 @@ import {
   setYear,
   getYear,
 } from "date-fns";
+import type { ImportantDate, UpcomingImportantDate } from "@/lib/types/db";
 
 /**
- * 올해 남은 주말 (토요일 + 일요일) 횟수
+ * 올해 남은 주말(토요일 + 일요일) 횟수.
  * 오늘 포함, 12월 31일까지.
  */
 export function remainingWeekendsThisYear(today: Date = new Date()): number {
@@ -38,32 +39,76 @@ export function remainingWeekendPairsThisYear(today: Date = new Date()): number 
 }
 
 /**
- * 다음 생일까지 남은 일수.
- * birthday 가 null 이면 null 반환.
- * 올해 생일이 지났으면 내년 생일 기준.
+ * 다음 발생일까지 남은 일수.
+ * 매년 반복되는 날로 간주: 올해 발생일이 지났으면 내년 기준.
+ *
+ * @param dateValue YYYY-MM-DD 문자열
  */
-export function daysUntilNextBirthday(
-  birthday: string | null,
+export function daysUntilNextOccurrence(
+  dateValue: string,
   today: Date = new Date()
-): number | null {
-  if (!birthday) return null;
+): number {
+  const base = new Date(dateValue + "T00:00:00");
+  const todayStart = startOfDay(today);
+  const thisYear = getYear(todayStart);
+  let next = setYear(base, thisYear);
 
-  const bday = new Date(birthday + "T00:00:00");
-  const thisYear = getYear(today);
-  let nextBday = setYear(bday, thisYear);
-
-  if (isAfter(today, nextBday)) {
-    nextBday = setYear(bday, thisYear + 1);
+  if (isAfter(todayStart, next)) {
+    next = setYear(base, thisYear + 1);
   }
 
-  return differenceInCalendarDays(nextBday, startOfDay(today));
+  return differenceInCalendarDays(next, todayStart);
 }
 
 /**
- * 다음 생일 날짜 (M월 D일 표기)
+ * 다음 발생일을 YYYY-MM-DD 문자열로 반환.
  */
-export function formatNextBirthday(birthday: string | null): string | null {
-  if (!birthday) return null;
-  const bday = new Date(birthday + "T00:00:00");
-  return `${bday.getMonth() + 1}월 ${bday.getDate()}일`;
+export function nextOccurrenceDate(
+  dateValue: string,
+  today: Date = new Date()
+): string {
+  const base = new Date(dateValue + "T00:00:00");
+  const todayStart = startOfDay(today);
+  const thisYear = getYear(todayStart);
+  let next = setYear(base, thisYear);
+
+  if (isAfter(todayStart, next)) {
+    next = setYear(base, thisYear + 1);
+  }
+
+  const yyyy = next.getFullYear();
+  const mm = String(next.getMonth() + 1).padStart(2, "0");
+  const dd = String(next.getDate()).padStart(2, "0");
+  return `${yyyy}-${mm}-${dd}`;
+}
+
+/**
+ * "M월 D일" 표기.
+ */
+export function formatMonthDay(dateValue: string): string {
+  const d = new Date(dateValue + "T00:00:00");
+  return `${d.getMonth() + 1}월 ${d.getDate()}일`;
+}
+
+/**
+ * 의미있는 날 목록 중 가장 가까운 다음 발생일을 가진 항목 1개를 반환.
+ * 비어 있으면 null.
+ *
+ * 홈 화면 stats에서 "[라벨] D-day"로 노출하기 위함.
+ */
+export function findClosestUpcomingDate(
+  dates: ImportantDate[],
+  today: Date = new Date()
+): UpcomingImportantDate | null {
+  if (dates.length === 0) return null;
+
+  const enriched = dates.map((d) => ({
+    label: d.label,
+    date_value: d.date_value,
+    days_until: daysUntilNextOccurrence(d.date_value, today),
+    next_occurrence: nextOccurrenceDate(d.date_value, today),
+  }));
+
+  enriched.sort((a, b) => a.days_until - b.days_until);
+  return enriched[0];
 }

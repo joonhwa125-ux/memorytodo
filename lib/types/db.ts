@@ -20,8 +20,17 @@ export interface Person {
   id: string;
   user_id: string;
   display_name: string;
-  birthday: string | null;
   is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ImportantDate {
+  id: string;
+  person_id: string;
+  user_id: string;
+  label: string;          // 자유 입력 라벨 (예: "생일", "결혼기념일")
+  date_value: string;     // YYYY-MM-DD (매년 반복 기준)
   created_at: string;
   updated_at: string;
 }
@@ -64,6 +73,16 @@ export interface QuadrantSummary {
 }
 
 export interface PersonWithStats extends Person {
-  last_event_at: string | null;
   resisted_count_this_month: number;
+}
+
+/**
+ * 가장 가까운 다음 발생일을 가진 의미있는 날.
+ * 홈 stats 영역에서 D-day로 노출하기 위한 view-model.
+ */
+export interface UpcomingImportantDate {
+  label: string;
+  date_value: string;     // 원본 날짜 (YYYY-MM-DD)
+  days_until: number;     // 다음 발생일까지 남은 일수 (오늘=0)
+  next_occurrence: string; // 다음 발생일 (YYYY-MM-DD)
 }

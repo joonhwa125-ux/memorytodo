@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "기억",
-  description: "한 사람과의 1년을 조용히 기록합니다.",
+  description: "소중한 사람을 위한 할 일을 기록합니다.",
 };
 
 export const viewport: Viewport = {
