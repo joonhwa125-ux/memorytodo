@@ -3,14 +3,17 @@
   "version": "0.2.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=20.6.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "preview": "vite preview",
     "lint": "eslint .",
     "type-check": "tsc -b --noEmit",
-    "server": "node server.cjs",
-    "db:inspect": "node scripts/inspect-db.cjs"
+    "server": "node --env-file=.env.local server.cjs",
+    "db:inspect": "node --env-file=.env.local scripts/inspect-db.cjs"
   },
   "dependencies": {
     "cors": "^2.8.6",

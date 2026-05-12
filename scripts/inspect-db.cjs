@@ -6,6 +6,7 @@ const Person = require('../server/models/Person.cjs');
 const ImportantDate = require('../server/models/ImportantDate.cjs');
 const Intent = require('../server/models/Intent.cjs');
 const IntentEvent = require('../server/models/IntentEvent.cjs');
+const { maskUri } = require('../server/db.cjs');
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/halilapp';
 
@@ -22,7 +23,7 @@ function fmt(doc) {
 
 async function main() {
   await mongoose.connect(MONGO_URI);
-  console.log(`\n[connected] ${MONGO_URI}`);
+  console.log(`\n[connected] ${maskUri(MONGO_URI)}`);
 
   const persons = await Person.find().lean();
   divider(`persons  (${persons.length}건)`);

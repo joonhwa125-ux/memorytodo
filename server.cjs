@@ -13,14 +13,28 @@ const intentEventsRoutes = require('./server/routes/intentEvents.cjs');
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// === Middleware ===
+// === CORS ===
+// 허용 오리진:
+//   1) localhost / 127.0.0.1 의 모든 포트 (개발용 — 항상 허용)
+//   2) ALLOWED_ORIGINS env (쉼표 구분, 프로덕션 도메인 추가용)
+//      예) ALLOWED_ORIGINS=https://memory.vercel.app,https://memory-pr-2.vercel.app
+const extraOrigins = (process.env.ALLOWED_ORIGINS || '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
+
+function isAllowedOrigin(origin) {
+  if (!origin) return true; // curl / Postman / 서버사이드 요청
+  if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin)) return true;
+  if (extraOrigins.includes(origin)) return true;
+  return false;
+}
+
 app.use(
   cors({
     origin: (origin, cb) => {
-      // 개발 환경: localhost / 127.0.0.1 의 모든 포트 허용
-      if (!origin) return cb(null, true);
-      const ok = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
-      cb(ok ? null : new Error('CORS not allowed'), ok);
+      const ok = isAllowedOrigin(origin);
+      cb(ok ? null : new Error(`CORS not allowed: ${origin}`), ok);
     },
     credentials: true,
   })
