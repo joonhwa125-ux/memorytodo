@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { Intent } from "../_lib/models/Intent";
-import { withDb, methodNotAllowed, DEFAULT_USER_ID } from "../_lib/handler";
+import { Intent } from "../_lib/models/Intent.js";
+import { withDb, methodNotAllowed, DEFAULT_USER_ID } from "../_lib/handler.js";
 
 export default withDb(async (req: VercelRequest, res: VercelResponse) => {
   const { id } = req.query;

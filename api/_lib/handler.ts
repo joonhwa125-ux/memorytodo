@@ -1,6 +1,6 @@
 // 공통 핸들러 — DB 연결 + 에러 처리 + 임시 단일 사용자 ID
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { connectDB } from "./db";
+import { connectDB } from "./db.js";
 
 export const DEFAULT_USER_ID = "default-user";
 

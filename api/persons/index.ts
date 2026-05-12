@@ -1,6 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { Person } from "../_lib/models/Person";
-import { withDb, methodNotAllowed, DEFAULT_USER_ID } from "../_lib/handler";
+import { Person } from "../_lib/models/Person.js";
+import { withDb, methodNotAllowed, DEFAULT_USER_ID } from "../_lib/handler.js";
 
 export default withDb(async (req: VercelRequest, res: VercelResponse) => {
   if (req.method === "GET") {
