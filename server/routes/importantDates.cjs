@@ -1,6 +1,6 @@
 // ImportantDate CRUD 라우트
 const express = require('express');
-const ImportantDate = require('../models/ImportantDate');
+const ImportantDate = require('../models/ImportantDate.cjs');
 
 const router = express.Router();
 const DEFAULT_USER_ID = 'default-user';

@@ -4,11 +4,11 @@
 const express = require('express');
 const cors = require('cors');
 
-const { connectDB } = require('./server/db');
-const personsRoutes = require('./server/routes/persons');
-const importantDatesRoutes = require('./server/routes/importantDates');
-const intentsRoutes = require('./server/routes/intents');
-const intentEventsRoutes = require('./server/routes/intentEvents');
+const { connectDB } = require('./server/db.cjs');
+const personsRoutes = require('./server/routes/persons.cjs');
+const importantDatesRoutes = require('./server/routes/importantDates.cjs');
+const intentsRoutes = require('./server/routes/intents.cjs');
+const intentEventsRoutes = require('./server/routes/intentEvents.cjs');
 
 const app = express();
 const PORT = process.env.PORT || 5000;

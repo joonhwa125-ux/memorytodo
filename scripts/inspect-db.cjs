@@ -2,10 +2,10 @@
 // 사용: node scripts/inspect-db.js
 
 const mongoose = require('mongoose');
-const Person = require('../server/models/Person');
-const ImportantDate = require('../server/models/ImportantDate');
-const Intent = require('../server/models/Intent');
-const IntentEvent = require('../server/models/IntentEvent');
+const Person = require('../server/models/Person.cjs');
+const ImportantDate = require('../server/models/ImportantDate.cjs');
+const Intent = require('../server/models/Intent.cjs');
+const IntentEvent = require('../server/models/IntentEvent.cjs');
 
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/halilapp';
 

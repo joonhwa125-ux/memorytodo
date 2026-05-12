@@ -1,6 +1,6 @@
 // Person CRUD 라우트
 const express = require('express');
-const Person = require('../models/Person');
+const Person = require('../models/Person.cjs');
 
 const router = express.Router();
 

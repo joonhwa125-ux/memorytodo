@@ -1,6 +1,6 @@
 // Intent CRUD 라우트 (할 일 / 참기)
 const express = require('express');
-const Intent = require('../models/Intent');
+const Intent = require('../models/Intent.cjs');
 
 const router = express.Router();
 const DEFAULT_USER_ID = 'default-user';

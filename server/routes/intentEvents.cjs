@@ -1,6 +1,6 @@
 // IntentEvent 라우트 (4사분면 실행 기록)
 const express = require('express');
-const IntentEvent = require('../models/IntentEvent');
+const IntentEvent = require('../models/IntentEvent.cjs');
 
 const router = express.Router();
 const DEFAULT_USER_ID = 'default-user';
