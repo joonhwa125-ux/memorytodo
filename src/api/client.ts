@@ -4,9 +4,11 @@
 //   const intents = await api<Intent[]>('/api/intents');
 //   const created = await api<Intent>('/api/intents', { method: 'POST', body: { ... } });
 
+// 프로덕션(Vercel): 프론트와 API가 같은 오리진. 비워두면 상대 경로 사용.
+// 로컬 dev (vercel dev): 동일하게 같은 오리진 (3000번).
+// VITE_API_BASE_URL을 명시적으로 설정하면 오버라이드 (예: 분리된 백엔드 사용 시).
 const BASE_URL =
-  (import.meta.env.VITE_API_BASE_URL as string | undefined) ??
-  "http://localhost:5000";
+  (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? "";
 
 export interface ApiOptions {
   method?: "GET" | "POST" | "PUT" | "DELETE";
