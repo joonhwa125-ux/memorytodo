@@ -3,13 +3,14 @@ node_modules/
 .pnp
 .pnp.js
 
-# Next.js
+# Next.js (legacy)
 /.next/
 /out/
 next-env.d.ts
 *.tsbuildinfo
 
-# Production
+# Vite / production
+/dist
 /build
 
 # Environment
