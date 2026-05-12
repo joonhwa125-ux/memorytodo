@@ -1,8 +1,8 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { IntentEvent } from "../_lib/models/IntentEvent.js";
-import { withDb, methodNotAllowed, DEFAULT_USER_ID } from "../_lib/handler.js";
+import { withDb, methodNotAllowed } from "../_lib/handler.js";
 
-export default withDb(async (req: VercelRequest, res: VercelResponse) => {
+export default withDb(async (req: VercelRequest, res: VercelResponse, ctx) => {
   const { id } = req.query;
   if (typeof id !== "string") {
     res.status(400).json({ error: "invalid id" });
@@ -12,7 +12,7 @@ export default withDb(async (req: VercelRequest, res: VercelResponse) => {
   if (req.method === "DELETE") {
     const result = await IntentEvent.findOneAndDelete({
       _id: id,
-      userId: DEFAULT_USER_ID,
+      userId: ctx.userId,
     });
     if (!result) {
       res.status(404).json({ error: "not found" });

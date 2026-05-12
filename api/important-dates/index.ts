@@ -1,10 +1,10 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { ImportantDate } from "../_lib/models/ImportantDate.js";
-import { withDb, methodNotAllowed, DEFAULT_USER_ID } from "../_lib/handler.js";
+import { withDb, methodNotAllowed } from "../_lib/handler.js";
 
-export default withDb(async (req: VercelRequest, res: VercelResponse) => {
+export default withDb(async (req: VercelRequest, res: VercelResponse, ctx) => {
   if (req.method === "GET") {
-    const filter: Record<string, unknown> = { userId: DEFAULT_USER_ID };
+    const filter: Record<string, unknown> = { userId: ctx.userId };
     if (typeof req.query.personId === "string") filter.personId = req.query.personId;
 
     const dates = await ImportantDate.find(filter).sort({ dateValue: 1 });
@@ -19,7 +19,7 @@ export default withDb(async (req: VercelRequest, res: VercelResponse) => {
       return;
     }
     const doc = await ImportantDate.create({
-      userId: DEFAULT_USER_ID,
+      userId: ctx.userId,
       personId,
       label: String(label).trim(),
       dateValue,

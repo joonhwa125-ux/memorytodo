@@ -1,8 +1,8 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { Intent } from "../_lib/models/Intent.js";
-import { withDb, methodNotAllowed, DEFAULT_USER_ID } from "../_lib/handler.js";
+import { withDb, methodNotAllowed } from "../_lib/handler.js";
 
-export default withDb(async (req: VercelRequest, res: VercelResponse) => {
+export default withDb(async (req: VercelRequest, res: VercelResponse, ctx) => {
   const { id } = req.query;
   if (typeof id !== "string") {
     res.status(400).json({ error: "invalid id" });
@@ -10,7 +10,7 @@ export default withDb(async (req: VercelRequest, res: VercelResponse) => {
   }
 
   if (req.method === "GET") {
-    const intent = await Intent.findOne({ _id: id, userId: DEFAULT_USER_ID });
+    const intent = await Intent.findOne({ _id: id, userId: ctx.userId });
     if (!intent) {
       res.status(404).json({ error: "not found" });
       return;
@@ -34,7 +34,7 @@ export default withDb(async (req: VercelRequest, res: VercelResponse) => {
       updates.isArchived = req.body.isArchived;
     }
     const intent = await Intent.findOneAndUpdate(
-      { _id: id, userId: DEFAULT_USER_ID },
+      { _id: id, userId: ctx.userId },
       updates,
       { new: true }
     );
@@ -49,7 +49,7 @@ export default withDb(async (req: VercelRequest, res: VercelResponse) => {
   if (req.method === "DELETE") {
     const result = await Intent.findOneAndDelete({
       _id: id,
-      userId: DEFAULT_USER_ID,
+      userId: ctx.userId,
     });
     if (!result) {
       res.status(404).json({ error: "not found" });

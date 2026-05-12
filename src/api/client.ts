@@ -1,12 +1,11 @@
-// localhost:5000 backend 호출을 위한 fetch wrapper
+// localhost:5000 / Vercel 같은 오리진의 백엔드를 호출하는 fetch wrapper.
 //
-// 사용 예시:
-//   const intents = await api<Intent[]>('/api/intents');
-//   const created = await api<Intent>('/api/intents', { method: 'POST', body: { ... } });
+// 모든 요청에 X-User-Id 헤더를 자동 첨부하여 브라우저별 데이터 격리를 제공한다.
 
-// 프로덕션(Vercel): 프론트와 API가 같은 오리진. 비워두면 상대 경로 사용.
-// 로컬 dev (vercel dev): 동일하게 같은 오리진 (3000번).
-// VITE_API_BASE_URL을 명시적으로 설정하면 오버라이드 (예: 분리된 백엔드 사용 시).
+import { getUserId } from "./userId";
+
+// 프로덕션(Vercel 단일화): 프론트와 API가 같은 오리진 → 상대 경로.
+// 별도 백엔드를 쓸 경우 VITE_API_BASE_URL 로 오버라이드.
 const BASE_URL =
   (import.meta.env.VITE_API_BASE_URL as string | undefined) ?? "";
 
@@ -31,9 +30,14 @@ export async function api<T = unknown>(
 ): Promise<T> {
   const { method = "GET", body, signal } = options;
 
+  const headers: Record<string, string> = {
+    "X-User-Id": getUserId(),
+  };
+  if (body) headers["Content-Type"] = "application/json";
+
   const res = await fetch(`${BASE_URL}${path}`, {
     method,
-    headers: body ? { "Content-Type": "application/json" } : undefined,
+    headers,
     body: body ? JSON.stringify(body) : undefined,
     signal,
   });

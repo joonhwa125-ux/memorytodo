@@ -1,12 +1,12 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import { IntentEvent } from "../_lib/models/IntentEvent.js";
-import { withDb, methodNotAllowed, DEFAULT_USER_ID } from "../_lib/handler.js";
+import { withDb, methodNotAllowed } from "../_lib/handler.js";
 
 const VALID_QUADRANTS = ["aligned", "procrastinated", "relapsed", "resisted"] as const;
 
-export default withDb(async (req: VercelRequest, res: VercelResponse) => {
+export default withDb(async (req: VercelRequest, res: VercelResponse, ctx) => {
   if (req.method === "GET") {
-    const filter: Record<string, unknown> = { userId: DEFAULT_USER_ID };
+    const filter: Record<string, unknown> = { userId: ctx.userId };
     if (typeof req.query.personId === "string") filter.personId = req.query.personId;
     if (typeof req.query.since === "string") {
       const since = new Date(req.query.since);
@@ -31,7 +31,7 @@ export default withDb(async (req: VercelRequest, res: VercelResponse) => {
       return;
     }
     const ev = await IntentEvent.create({
-      userId: DEFAULT_USER_ID,
+      userId: ctx.userId,
       personId,
       intentId: intentId || null,
       quadrant,
